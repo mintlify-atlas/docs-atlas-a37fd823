@@ -1,0 +1,120 @@
+{
+  "projectType": "frontend",
+  "projectName": "Shizen UI",
+  "projectDescription": "Minimalist, fast, and animated Svelte 5 UI library focused on micro-interactions",
+  "theme": "willow",
+  "primaryColor": "#bf3b41",
+  "lightColor": "#f7ecd7",
+  "darkColor": "#090908",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "introduction",
+              "installation",
+              "quickstart"
+            ]
+          },
+          {
+            "group": "Concepts",
+            "pages": [
+              "concepts/styling",
+              "concepts/theming",
+              "concepts/variants",
+              "concepts/animations"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/customization",
+              "guides/composition",
+              "guides/accessibility"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Components",
+        "groups": [
+          {
+            "group": "Form Controls",
+            "pages": [
+              "components/button",
+              "components/button-group",
+              "components/input",
+              "components/input-group",
+              "components/text-area",
+              "components/text-field"
+            ]
+          },
+          {
+            "group": "Selection",
+            "pages": [
+              "components/checkbox",
+              "components/checkbox-group",
+              "components/radio",
+              "components/radio-group"
+            ]
+          },
+          {
+            "group": "Form Helpers",
+            "pages": [
+              "components/label",
+              "components/description",
+              "components/field-error"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Packages",
+            "pages": [
+              "api/svelte",
+              "api/styles"
+            ]
+          },
+          {
+            "group": "Utilities",
+            "pages": [
+              "api/utilities/cn",
+              "api/utilities/variants"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Svelte 5 runes and snippets API",
+    "Tailwind CSS v4 integration",
+    "Compound component patterns",
+    "Micro-interactions and animations",
+    "Accessible form controls",
+    "TypeScript support",
+    "Customizable variants",
+    "Minimal bundle size"
+  ],
+  "publicApiSurface": [
+    "Button",
+    "ButtonGroup",
+    "Input",
+    "InputGroup",
+    "TextArea",
+    "TextField",
+    "Checkbox",
+    "CheckboxGroup",
+    "Radio",
+    "RadioGroup",
+    "Label",
+    "Description",
+    "FieldError"
+  ]
+}
