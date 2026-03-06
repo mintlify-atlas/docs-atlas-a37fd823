@@ -1,0 +1,245 @@
+---
+title: 'cn'
+description: 'Utility function for merging class names intelligently'
+---
+
+## Overview
+
+The `cn` utility function combines `clsx` and `tailwind-merge` to provide intelligent class name merging. It constructs className strings conditionally and resolves Tailwind CSS class conflicts automatically.
+
+## Type Signature
+
+```typescript
+function cn(...inputs: ClassValue[]): string
+```
+
+**Source:** `packages/styles/src/utils/cn.ts`
+
+### Parameters
+
+<ParamField name="inputs" type="ClassValue[]" required>
+  Variable number of class values to merge. Each value can be:
+  - `string`: A space-separated list of class names
+  - `object`: Keys are class names, values are booleans for conditional inclusion
+  - `array`: Nested arrays of class values
+  - `undefined`, `null`, `false`: Ignored values
+</ParamField>
+
+### Returns
+
+<ResponseField name="return" type="string">
+  A merged string of class names with conflicts resolved
+</ResponseField>
+
+## Implementation
+
+```typescript
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+```
+
+### How It Works
+
+1. **`clsx`**: Constructs the className string conditionally
+   - Handles objects, arrays, and various value types
+   - Filters out falsy values
+   - Concatenates valid class names
+
+2. **`twMerge`**: Merges Tailwind classes intelligently
+   - Resolves conflicting Tailwind classes (e.g., `p-4` vs `p-2`)
+   - Keeps the last occurrence when classes conflict
+   - Preserves non-Tailwind classes
+
+## Usage Examples
+
+### Basic Usage
+
+```typescript
+import { cn } from '@shizen-ui/styles';
+
+// Simple string concatenation
+cn('text-base', 'font-medium', 'text-gray-900');
+// => "text-base font-medium text-gray-900"
+```
+
+### Conditional Classes
+
+```typescript
+// Object syntax for conditions
+cn('button', {
+  'button--primary': isPrimary,
+  'button--disabled': isDisabled
+});
+// => "button button--primary" (if isPrimary is true)
+
+// Ternary expressions
+cn('button', isActive ? 'bg-blue-500' : 'bg-gray-500');
+// => "button bg-blue-500" (if isActive is true)
+```
+
+### Tailwind Class Conflicts
+
+```typescript
+// Conflicting padding classes
+cn('p-4', 'p-2');
+// => "p-2" (last one wins)
+
+// Conflicting text colors
+cn('text-red-500', 'text-blue-500');
+// => "text-blue-500"
+
+// Mixed conflicts
+cn('px-4 py-2', 'p-8');
+// => "p-8" (p-8 overrides both px-4 and py-2)
+```
+
+### Arrays and Objects
+
+```typescript
+// Arrays
+cn(['text-base', 'font-medium'], 'text-gray-900');
+// => "text-base font-medium text-gray-900"
+
+// Nested arrays and objects
+cn(
+  'base-class',
+  [
+    'array-class',
+    { 'conditional-class': true }
+  ],
+  {
+    'another-class': condition,
+    'disabled': false
+  }
+);
+```
+
+### With Component Variants
+
+```typescript
+import { cn, buttonStyles } from '@shizen-ui/styles';
+
+// Combine variant styles with custom classes
+const className = cn(
+  buttonStyles({ variant: 'primary', size: 'md' }),
+  'custom-padding',
+  'hover:scale-105'
+);
+```
+
+### In Svelte Components
+
+```svelte
+<script>
+  import { cn } from '@shizen-ui/styles';
+  
+  let { class: className, disabled } = $props();
+</script>
+
+<button
+  class={cn(
+    'base-button',
+    'px-4 py-2',
+    {
+      'opacity-50 cursor-not-allowed': disabled
+    },
+    className
+  )}
+>
+  Click me
+</button>
+```
+
+## Common Patterns
+
+### Base + Conditional + Custom
+
+```typescript
+function MyComponent({ className, variant, disabled }) {
+  return cn(
+    // Base styles
+    'rounded-md transition-colors',
+    
+    // Variant styles
+    variant === 'primary' && 'bg-blue-500 text-white',
+    variant === 'secondary' && 'bg-gray-200 text-gray-900',
+    
+    // State styles
+    disabled && 'opacity-50 pointer-events-none',
+    
+    // Custom classes from props
+    className
+  );
+}
+```
+
+### With TypeScript
+
+```typescript
+import { cn } from '@shizen-ui/styles';
+import type { ClassValue } from 'clsx';
+
+interface ButtonProps {
+  className?: ClassValue;
+  variant?: 'primary' | 'secondary';
+  size?: 'sm' | 'md' | 'lg';
+}
+
+function Button({ className, variant, size }: ButtonProps) {
+  return cn(
+    'button',
+    variant && `button--${variant}`,
+    size && `button--${size}`,
+    className
+  );
+}
+```
+
+### Overriding Variant Styles
+
+```typescript
+import { cn, buttonStyles } from '@shizen-ui/styles';
+
+// Override default padding from buttonStyles
+const className = cn(
+  buttonStyles({ variant: 'primary', size: 'md' }),
+  'px-8 py-4' // These will override the variant's padding
+);
+```
+
+## Why Use cn?
+
+### Without cn:
+
+```typescript
+// Manual concatenation - verbose and error-prone
+const className = `button ${isPrimary ? 'button--primary' : ''} ${isDisabled ? 'button--disabled' : ''} ${customClass || ''}`;
+
+// Class conflicts not resolved
+'p-4 p-2' // => "p-4 p-2" (both applied, unintended result)
+```
+
+### With cn:
+
+```typescript
+// Clean and concise
+const className = cn(
+  'button',
+  { 'button--primary': isPrimary },
+  { 'button--disabled': isDisabled },
+  customClass
+);
+
+// Conflicts automatically resolved
+cn('p-4', 'p-2') // => "p-2" (correct result)
+```
+
+## Related
+
+- [tailwind-variants](/api/utilities/variants) - Type-safe variant system
+- [clsx documentation](https://github.com/lukeed/clsx) - Conditional class construction
+- [tailwind-merge documentation](https://github.com/dcastil/tailwind-merge) - Tailwind class merging

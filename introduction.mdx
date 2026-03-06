@@ -1,0 +1,133 @@
+---
+title: "Introduction"
+description: "Learn about Shizen UI - a minimalist, fast, and animated Svelte 5 UI library"
+---
+
+## What is Shizen UI?
+
+Shizen UI is a minimalist and customizable Svelte 5 UI library that combines the elegance of modern design systems with the power of Svelte 5's runes and snippets API. Built from the ground up for Svelte 5, it provides a comprehensive set of accessible, composable components focused on delightful micro-interactions.
+
+<Note>
+  **Shizen** (自然) means "nature" in Japanese, reflecting the library's philosophy of natural, intuitive design and effortless developer experience.
+</Note>
+
+## Key Features
+
+Shizen UI is designed to provide everything you need to build beautiful, accessible user interfaces with minimal effort.
+
+<CardGroup cols={2}>
+  <Card title="Svelte 5 Native" icon="bolt">
+    Built exclusively for Svelte 5 using runes (`$props`, `$derived`, `$bindable`) and the snippets API for maximum performance and type safety.
+  </Card>
+  <Card title="Tailwind CSS v4" icon="paintbrush">
+    Seamlessly integrated with Tailwind CSS v4, leveraging the latest features including the new CSS-first configuration and improved performance.
+  </Card>
+  <Card title="Compound Components" icon="layer-group">
+    Flexible compound component patterns (like `TextField`, `InputGroup`, `ButtonGroup`) give you complete control over structure and composition.
+  </Card>
+  <Card title="Micro-interactions" icon="wand-magic-sparkles">
+    Thoughtfully crafted animations and transitions that enhance user experience without adding unnecessary complexity.
+  </Card>
+  <Card title="Accessible by Default" icon="universal-access">
+    ARIA-compliant components with proper keyboard navigation, focus management, and screen reader support built in.
+  </Card>
+  <Card title="TypeScript First" icon="code">
+    Fully typed with discriminated unions and intelligent prop types that provide excellent IDE autocomplete and error detection.
+  </Card>
+  <Card title="Variant System" icon="sliders">
+    Powerful styling variants using `tailwind-variants` for consistent, theme-aware component customization across your application.
+  </Card>
+  <Card title="Tree-shakeable" icon="feather">
+    Optimized for minimal bundle sizes with complete tree-shaking support and zero runtime dependencies beyond Svelte.
+  </Card>
+</CardGroup>
+
+## Why Choose Shizen UI?
+
+### Over shadcn/ui
+
+- **Svelte 5 Native**: Purpose-built for Svelte 5 instead of being a port from React
+- **Tailwind v4 Ready**: Fully integrated with Tailwind CSS v4's modern architecture
+- **Component Library**: Pre-built components with consistent API, not just copy-paste snippets
+- **Compound Patterns**: Advanced composition with context-based component communication
+
+### Over HeroUI/NextUI
+
+- **Lightweight**: No React dependency, smaller bundle size with Svelte's compiler-based approach
+- **Tailwind v4**: Uses modern Tailwind CSS v4 instead of custom CSS-in-JS solutions
+- **Simpler API**: Leverages Svelte 5's runes for cleaner, more intuitive component APIs
+- **Framework Agnostic Styles**: Styles package can be used independently
+
+### Over Melt UI
+
+- **Styled Components**: Pre-styled, production-ready components out of the box
+- **Integrated Design System**: Cohesive design language across all components
+- **Tailwind Integration**: Built-in Tailwind CSS v4 integration and theming
+- **Faster Development**: Less customization needed for common use cases
+
+## Component Overview
+
+Shizen UI currently provides the following components:
+
+### Form Controls
+
+- **Button** - Interactive button with multiple variants and sizes
+- **ButtonGroup** - Group related buttons with shared styling
+- **Input** - Text input with validation and accessibility features
+- **InputGroup** - Input with prefix/suffix content
+- **TextArea** - Multi-line text input with auto-resize support
+- **TextField** - Complete form field with label, description, and error handling
+
+### Selection Controls
+
+- **Checkbox** - Accessible checkbox with compound component API
+- **CheckboxGroup** - Group checkboxes with shared validation
+- **Radio** - Radio button with custom indicator support
+- **RadioGroup** - Radio group with orientation and validation
+
+### Form Helpers
+
+- **Label** - Accessible form labels with proper associations
+- **Description** - Helper text for form fields
+- **FieldError** - Error message display with ARIA support
+
+## Design Philosophy
+
+Shizen UI follows these core principles:
+
+1. **Natural and Intuitive**: Components should work the way developers expect, with minimal configuration
+2. **Composition over Configuration**: Use compound components and context for flexible composition
+3. **Accessible by Default**: Accessibility should not be an afterthought or opt-in feature
+4. **Performance First**: Leverage Svelte 5's compiler and reactive primitives for optimal performance
+5. **Customization Through Standards**: Use Tailwind CSS and standard web patterns for theming and styling
+
+## Next Steps
+
+Ready to start using Shizen UI? Here's what to do next:
+
+<CardGroup cols={2}>
+  <Card title="Installation" icon="download" href="/installation">
+    Set up Shizen UI in your Svelte 5 project with npm, pnpm, yarn, or bun
+  </Card>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Build your first component and learn the basics in under 5 minutes
+  </Card>
+  <Card title="Components" icon="cube" href="/components/button">
+    Explore the complete component library with live examples
+  </Card>
+  <Card title="Styling" icon="paintbrush" href="/concepts/styling">
+    Learn how to customize components with Tailwind CSS v4
+  </Card>
+</CardGroup>
+
+## Community and Support
+
+Shizen UI is open source and actively maintained. Get involved:
+
+- **GitHub**: [jaftdelgado/shizen-ui](https://github.com/jaftdelgado/shizen-ui)
+- **Issues**: Report bugs or request features on GitHub
+- **Discussions**: Share ideas and get help from the community
+
+<Tip>
+  Love Shizen UI? Give us a star on [GitHub](https://github.com/jaftdelgado/shizen-ui) to show your support!
+</Tip>

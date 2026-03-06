@@ -1,0 +1,308 @@
+---
+title: Button Group
+description: A container component that groups multiple buttons together with consistent styling and optional separators.
+---
+
+## Overview
+
+The ButtonGroup component provides a container for grouping multiple related buttons together. It manages the visual styling, spacing, and optional separators between buttons, and automatically propagates variant, size, and disabled state to all child buttons.
+
+## Installation
+
+```bash
+npm install @shizen-ui/svelte
+```
+
+## Import
+
+```typescript
+import { Button, ButtonGroup } from '@shizen-ui/svelte';
+```
+
+## Basic Usage
+
+<CodeGroup>
+```svelte Horizontal Group
+<script>
+  import { Button, ButtonGroup } from '@shizen-ui/svelte';
+</script>
+
+<ButtonGroup>
+  <Button>First</Button>
+  <Button>Second</Button>
+  <Button>Third</Button>
+</ButtonGroup>
+```
+
+```svelte Vertical Group
+<script>
+  import { Button, ButtonGroup } from '@shizen-ui/svelte';
+</script>
+
+<ButtonGroup orientation="vertical">
+  <Button>Option 1</Button>
+  <Button>Option 2</Button>
+  <Button>Option 3</Button>
+</ButtonGroup>
+```
+</CodeGroup>
+
+## Props
+
+<ParamField path="variant" type="string" default="primary">
+  The visual style variant applied to all child buttons.
+  
+  Options: `"primary"` | `"secondary"` | `"tertiary"` | `"danger"` | `"ghost"` | `"outline"` | `"soft-danger"`
+</ParamField>
+
+<ParamField path="size" type="string" default="md">
+  The size applied to all child buttons.
+  
+  Options: `"sm"` | `"md"` | `"lg"`
+</ParamField>
+
+<ParamField path="orientation" type="string" default="horizontal">
+  The layout direction of the button group.
+  
+  Options: `"horizontal"` | `"vertical"`
+</ParamField>
+
+<ParamField path="hideSeparator" type="boolean" default={false}>
+  When true, removes the visual separators between buttons.
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default={false}>
+  When true, disables all buttons in the group.
+</ParamField>
+
+<ParamField path="class" type="string">
+  Additional CSS classes to apply to the button group container.
+</ParamField>
+
+## Variants
+
+### Button Group Variants
+
+Apply consistent styling to all buttons in the group:
+
+<CodeGroup>
+```svelte Primary
+<ButtonGroup variant="primary">
+  <Button>First</Button>
+  <Button>Second</Button>
+  <Button>Third</Button>
+</ButtonGroup>
+```
+
+```svelte Secondary
+<ButtonGroup variant="secondary">
+  <Button>First</Button>
+  <Button>Second</Button>
+  <Button>Third</Button>
+</ButtonGroup>
+```
+
+```svelte Outline
+<ButtonGroup variant="outline">
+  <Button>First</Button>
+  <Button>Second</Button>
+  <Button>Third</Button>
+</ButtonGroup>
+```
+</CodeGroup>
+
+### Sizes
+
+<CodeGroup>
+```svelte Small
+<ButtonGroup size="sm">
+  <Button>Small</Button>
+  <Button>Group</Button>
+</ButtonGroup>
+```
+
+```svelte Medium
+<ButtonGroup size="md">
+  <Button>Medium</Button>
+  <Button>Group</Button>
+</ButtonGroup>
+```
+
+```svelte Large
+<ButtonGroup size="lg">
+  <Button>Large</Button>
+  <Button>Group</Button>
+</ButtonGroup>
+```
+</CodeGroup>
+
+### Orientation
+
+<CodeGroup>
+```svelte Horizontal
+<ButtonGroup orientation="horizontal">
+  <Button>Left</Button>
+  <Button>Center</Button>
+  <Button>Right</Button>
+</ButtonGroup>
+```
+
+```svelte Vertical
+<ButtonGroup orientation="vertical">
+  <Button>Top</Button>
+  <Button>Middle</Button>
+  <Button>Bottom</Button>
+</ButtonGroup>
+```
+</CodeGroup>
+
+## Advanced Examples
+
+### Without Separators
+
+```svelte
+<ButtonGroup hideSeparator>
+  <Button>Option A</Button>
+  <Button>Option B</Button>
+  <Button>Option C</Button>
+</ButtonGroup>
+```
+
+### With Icons
+
+```svelte
+<ButtonGroup variant="secondary" size="sm">
+  <Button startContent="i-lucide-align-left">Left</Button>
+  <Button startContent="i-lucide-align-center">Center</Button>
+  <Button startContent="i-lucide-align-right">Right</Button>
+</ButtonGroup>
+```
+
+### Icon-Only Group
+
+```svelte
+<ButtonGroup variant="outline">
+  <Button iconOnly>
+    <i class="i-lucide-bold"></i>
+  </Button>
+  <Button iconOnly>
+    <i class="i-lucide-italic"></i>
+  </Button>
+  <Button iconOnly>
+    <i class="i-lucide-underline"></i>
+  </Button>
+</ButtonGroup>
+```
+
+### Disabled Group
+
+```svelte
+<ButtonGroup disabled>
+  <Button>First</Button>
+  <Button>Second</Button>
+  <Button>Third</Button>
+</ButtonGroup>
+```
+
+### Override Individual Button
+
+Child buttons can override the group's variant:
+
+```svelte
+<ButtonGroup variant="secondary">
+  <Button>Normal</Button>
+  <Button>Normal</Button>
+  <Button variant="primary">Highlighted</Button>
+</ButtonGroup>
+```
+
+### Segmented Control Pattern
+
+```svelte
+<script>
+  import { Button, ButtonGroup } from '@shizen-ui/svelte';
+  
+  let selected = $state('day');
+</script>
+
+<ButtonGroup variant="outline">
+  <Button 
+    variant={selected === 'day' ? 'primary' : 'outline'}
+    onclick={() => selected = 'day'}
+  >
+    Day
+  </Button>
+  <Button 
+    variant={selected === 'week' ? 'primary' : 'outline'}
+    onclick={() => selected = 'week'}
+  >
+    Week
+  </Button>
+  <Button 
+    variant={selected === 'month' ? 'primary' : 'outline'}
+    onclick={() => selected = 'month'}
+  >
+    Month
+  </Button>
+</ButtonGroup>
+```
+
+### Vertical Toolbar
+
+```svelte
+<ButtonGroup orientation="vertical" variant="ghost" size="sm">
+  <Button iconOnly>
+    <i class="i-lucide-file-text"></i>
+  </Button>
+  <Button iconOnly>
+    <i class="i-lucide-folder"></i>
+  </Button>
+  <Button iconOnly>
+    <i class="i-lucide-image"></i>
+  </Button>
+  <Button iconOnly>
+    <i class="i-lucide-settings"></i>
+  </Button>
+</ButtonGroup>
+```
+
+## Accessibility
+
+- Uses `role="group"` to semantically group buttons
+- Applies `aria-disabled` attribute when the group is disabled
+- All child buttons remain keyboard navigable with Tab/Shift+Tab
+- Consider using `aria-label` on the group to describe its purpose:
+
+```svelte
+<ButtonGroup aria-label="Text alignment options">
+  <Button>Left</Button>
+  <Button>Center</Button>
+  <Button>Right</Button>
+</ButtonGroup>
+```
+
+<Note>
+  For mutually exclusive selections (like a segmented control), consider using a RadioGroup component instead for better accessibility semantics.
+</Note>
+
+## Context Propagation
+
+The ButtonGroup uses Svelte context to automatically propagate the following props to all child Button components:
+
+- `variant` - The visual style variant
+- `size` - The button size
+- `disabled` - The disabled state
+
+Child buttons can override these props by setting them explicitly:
+
+```svelte
+<ButtonGroup variant="secondary" size="md" disabled>
+  <Button>Inherits all props</Button>
+  <Button disabled={false}>Overrides disabled</Button>
+  <Button variant="primary" size="lg">Overrides variant and size</Button>
+</ButtonGroup>
+```
+
+<Tip>
+  Use ButtonGroup to create toolbar patterns, segmented controls, pagination controls, and any interface where multiple related actions should be visually grouped together.
+</Tip>

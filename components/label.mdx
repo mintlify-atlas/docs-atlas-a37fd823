@@ -1,0 +1,176 @@
+---
+title: "Label"
+description: "Accessible form label component with required indicator and state management"
+---
+
+## Overview
+
+The Label component provides an accessible label for form controls with automatic state management through field context. It displays a required indicator when needed and adapts its styling based on the field's validation state.
+
+## Import
+
+```svelte
+import { Label } from '@shizen-ui/svelte';
+```
+
+## Basic Usage
+
+```svelte
+<Label for="email">Email Address</Label>
+<Input id="email" type="email" />
+```
+
+## With TextField Context
+
+When used within a TextField, Label automatically inherits the field's state:
+
+```svelte
+<TextField invalid={hasError} required={true} disabled={false}>
+  <Label>Username</Label>
+  <Input />
+  <Description>Choose a unique username</Description>
+  <FieldError>Username is already taken</FieldError>
+</TextField>
+```
+
+<Note>
+  The Label component automatically connects to the TextField's context and inherits `invalid`, `disabled`, `required`, and `id` props.
+</Note>
+
+## Props
+
+<ParamField path="children" type="Snippet" required>
+  The label text content to display
+</ParamField>
+
+<ParamField path="for" type="string">
+  The ID of the form control this label is associated with. Automatically set when used within a TextField context.
+</ParamField>
+
+<ParamField path="required" type="boolean" default="false">
+  Whether the associated field is required. Displays an asterisk (*) indicator when true. Automatically inherited from TextField context.
+</ParamField>
+
+<ParamField path="invalid" type="boolean" default="false">
+  Whether the associated field has validation errors. Affects label styling. Automatically inherited from TextField context.
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default="false">
+  Whether the associated field is disabled. Affects label styling. Automatically inherited from TextField context.
+</ParamField>
+
+<ParamField path="class" type="string">
+  Additional CSS classes to apply to the label element
+</ParamField>
+
+## Examples
+
+### Standalone Label
+
+```svelte
+<Label for="password" required={true}>Password</Label>
+<Input id="password" type="password" />
+```
+
+### With Checkbox
+
+```svelte
+<Checkbox>
+  <CheckboxIndicator />
+  <Label>Accept terms and conditions</Label>
+</Checkbox>
+```
+
+### With Radio Button
+
+```svelte
+<Radio value="option1">
+  <RadioIndicator />
+  <Label>Option 1</Label>
+  <Description>This is the first option</Description>
+</Radio>
+```
+
+### Invalid State
+
+```svelte
+<Label for="email" invalid={true} required={true}>Email</Label>
+<Input id="email" type="email" invalid={true} />
+<FieldError>Please enter a valid email address</FieldError>
+```
+
+### Disabled State
+
+```svelte
+<Label for="name" disabled={true}>Full Name</Label>
+<Input id="name" disabled={true} />
+```
+
+## Styling and Customization
+
+The Label component uses the `labelStyles` variant from `@shizen-ui/styles`. You can customize its appearance:
+
+```svelte
+<Label class="text-lg font-semibold text-blue-600">Custom Styled Label</Label>
+```
+
+### Data Attributes
+
+The component exposes these data attributes for advanced styling:
+
+- `data-invalid`: Present when the field is invalid
+- `data-disabled`: Present when the field is disabled
+- `data-required`: Present when the field is required
+
+```css
+label[data-invalid] {
+  color: red;
+}
+
+label[data-disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+```
+
+## Accessibility
+
+<Tip>
+  The Label component follows WAI-ARIA best practices for form labels.
+</Tip>
+
+- Uses semantic `<label>` element for proper form association
+- The `for` attribute creates explicit association with form controls
+- Required indicator uses `aria-hidden="true"` to prevent redundant announcements
+- Visual required indicator (*) is supplemented by the `data-required` attribute
+- Automatically connects to form controls via the field context system
+
+### Screen Reader Support
+
+- Screen readers announce the label text when the associated control receives focus
+- Required fields are properly indicated through the field context
+- Invalid states are communicated through the associated input's ARIA attributes
+
+## Field Context Integration
+
+The Label component uses the `useFieldStateContext` hook to automatically inherit state from parent components like TextField, Checkbox, or Radio:
+
+```typescript
+const fieldContext = useFieldStateContext();
+
+const finalInvalid = fieldContext.exists ? fieldContext.invalid : invalid;
+const finalDisabled = fieldContext.exists ? fieldContext.disabled : disabled;
+const finalRequired = fieldContext.exists ? fieldContext.required : required;
+const finalFor = htmlFor ?? (fieldContext.exists ? fieldContext.id : undefined);
+```
+
+This means you rarely need to manually set these props when using Labels within compound components.
+
+## Related Components
+
+- [Description](/components/description) - Provides helpful text for form fields
+- [FieldError](/components/field-error) - Displays validation error messages
+- [TextField](/components/text-field) - Complete form field container
+- [Input](/components/input) - Text input component
+- [Checkbox](/components/checkbox) - Checkbox with label support
+- [Radio](/components/radio) - Radio button with label support

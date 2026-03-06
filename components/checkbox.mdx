@@ -1,0 +1,448 @@
+---
+title: Checkbox
+description: A compound checkbox component with customizable controls and indicators for binary or indeterminate selection.
+---
+
+## Overview
+
+The Checkbox component is a flexible selection control that allows users to toggle between checked, unchecked, and indeterminate states. Built with a compound component pattern, it provides fine-grained control over rendering with separate Control, Indicator, and Content sub-components.
+
+## Installation
+
+```bash
+npm install @shizen-ui/svelte
+```
+
+## Import
+
+<CodeGroup>
+```typescript Root Import
+import { Checkbox } from '@shizen-ui/svelte';
+```
+
+```typescript Compound Components
+import { Checkbox } from '@shizen-ui/svelte';
+
+const { Control, Indicator, Content } = Checkbox;
+```
+</CodeGroup>
+
+## Basic Usage
+
+<CodeGroup>
+```svelte Simple Checkbox
+<script>
+  import { Checkbox } from '@shizen-ui/svelte';
+  
+  let checked = $state(false);
+</script>
+
+<Checkbox bind:checked>
+  <Checkbox.Control />
+  <Checkbox.Content>
+    Accept terms and conditions
+  </Checkbox.Content>
+</Checkbox>
+```
+
+```svelte With Custom Indicator
+<script>
+  import { Checkbox } from '@shizen-ui/svelte';
+  
+  let checked = $state(false);
+</script>
+
+<Checkbox bind:checked>
+  <Checkbox.Control>
+    <Checkbox.Indicator />
+  </Checkbox.Control>
+  <Checkbox.Content>
+    Subscribe to newsletter
+  </Checkbox.Content>
+</Checkbox>
+```
+</CodeGroup>
+
+## Compound Component Structure
+
+The Checkbox uses a compound component pattern with three main parts:
+
+- **Checkbox** (Root) - The main container that manages state and context
+- **Checkbox.Control** - The visual checkbox box container
+- **Checkbox.Indicator** - The checkmark/dash icon that appears when checked
+- **Checkbox.Content** - The label content next to the checkbox
+
+```svelte
+<Checkbox>
+  <Checkbox.Control>
+    <Checkbox.Indicator />
+  </Checkbox.Control>
+  <Checkbox.Content>
+    Label text
+  </Checkbox.Content>
+</Checkbox>
+```
+
+<Note>
+  If no children are provided to `Checkbox.Control`, it will automatically render a `Checkbox.Indicator` as the default content.
+</Note>
+
+## Props
+
+### Checkbox (Root)
+
+<ParamField path="checked" type="boolean | 'mixed'" default={false}>
+  The checked state of the checkbox. Can be `true`, `false`, or `"mixed"` for indeterminate state.
+  
+  Use `bind:checked` for two-way binding.
+</ParamField>
+
+<ParamField path="value" type="string">
+  The value associated with this checkbox. Required when used inside a CheckboxGroup.
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default={false}>
+  When true, disables the checkbox interaction. Inherited from CheckboxGroup or Field context if present.
+</ParamField>
+
+<ParamField path="invalid" type="boolean" default={false}>
+  When true, applies invalid/error styling. Inherited from CheckboxGroup or Field context if present.
+</ParamField>
+
+<ParamField path="name" type="string">
+  The name attribute for the underlying input element. Automatically set by CheckboxGroup if present.
+</ParamField>
+
+<ParamField path="id" type="string">
+  The ID for the checkbox input. Auto-generated if not provided.
+</ParamField>
+
+<ParamField path="class" type="string">
+  Additional CSS classes to apply to the root container.
+</ParamField>
+
+### Checkbox.Control
+
+<ParamField path="class" type="string">
+  Additional CSS classes to apply to the control box.
+</ParamField>
+
+<ParamField path="children" type="Snippet">
+  Custom content for the control. If not provided, defaults to `<Checkbox.Indicator />`.
+</ParamField>
+
+### Checkbox.Indicator
+
+<ParamField path="class" type="string">
+  Additional CSS classes to apply to the indicator.
+</ParamField>
+
+<ParamField path="children" type="Snippet">
+  Custom indicator content. If not provided, shows default checkmark or dash icon.
+</ParamField>
+
+### Checkbox.Content
+
+<ParamField path="class" type="string">
+  Additional CSS classes to apply to the content wrapper.
+</ParamField>
+
+<ParamField path="children" type="Snippet" required>
+  The label content to display.
+</ParamField>
+
+## Checked State Management
+
+### Boolean State
+
+```svelte
+<script>
+  import { Checkbox } from '@shizen-ui/svelte';
+  
+  let agreed = $state(false);
+</script>
+
+<Checkbox bind:checked={agreed}>
+  <Checkbox.Control />
+  <Checkbox.Content>
+    I agree to the terms
+  </Checkbox.Content>
+</Checkbox>
+
+<p>Agreed: {agreed}</p>
+```
+
+### Indeterminate State
+
+```svelte
+<script>
+  import { Checkbox } from '@shizen-ui/svelte';
+  
+  let checked = $state<boolean | 'mixed'>('mixed');
+  
+  function toggleState() {
+    if (checked === false) {
+      checked = 'mixed';
+    } else if (checked === 'mixed') {
+      checked = true;
+    } else {
+      checked = false;
+    }
+  }
+</script>
+
+<Checkbox bind:checked onclick={toggleState}>
+  <Checkbox.Control />
+  <Checkbox.Content>
+    Select all (some selected)
+  </Checkbox.Content>
+</Checkbox>
+```
+
+<Note>
+  The indeterminate state (`"mixed"`) is useful for "select all" checkboxes where only some items are selected.
+</Note>
+
+## Styling and Variants
+
+### Custom Styles
+
+```svelte
+<Checkbox class="p-4 rounded-lg hover:bg-gray-50">
+  <Checkbox.Control class="border-2 border-blue-500" />
+  <Checkbox.Content class="text-lg font-medium">
+    Custom styled checkbox
+  </Checkbox.Content>
+</Checkbox>
+```
+
+### Custom Indicator
+
+```svelte
+<script>
+  import { Checkbox } from '@shizen-ui/svelte';
+  
+  let checked = $state(false);
+</script>
+
+<Checkbox bind:checked>
+  <Checkbox.Control>
+    <Checkbox.Indicator>
+      {#if checked}
+        <i class="i-lucide-check text-green-500"></i>
+      {/if}
+    </Checkbox.Indicator>
+  </Checkbox.Control>
+  <Checkbox.Content>
+    Custom check icon
+  </Checkbox.Content>
+</Checkbox>
+```
+
+### State-Based Styling
+
+```svelte
+<Checkbox disabled>
+  <Checkbox.Control />
+  <Checkbox.Content>
+    Disabled checkbox
+  </Checkbox.Content>
+</Checkbox>
+
+<Checkbox invalid>
+  <Checkbox.Control />
+  <Checkbox.Content>
+    Invalid checkbox
+  </Checkbox.Content>
+</Checkbox>
+```
+
+## Advanced Examples
+
+### With TextField Integration
+
+```svelte
+<script>
+  import { Checkbox, TextField, FieldError } from '@shizen-ui/svelte';
+  
+  let accepted = $state(false);
+  let showError = $state(false);
+  
+  function handleSubmit() {
+    showError = !accepted;
+  }
+</script>
+
+<TextField invalid={showError}>
+  <Checkbox bind:checked={accepted}>
+    <Checkbox.Control />
+    <Checkbox.Content>
+      I have read and agree to the terms of service
+    </Checkbox.Content>
+  </Checkbox>
+  {#if showError}
+    <FieldError>You must accept the terms to continue</FieldError>
+  {/if}
+</TextField>
+
+<button onclick={handleSubmit}>Submit</button>
+```
+
+### Controlled Checkbox
+
+```svelte
+<script>
+  import { Checkbox } from '@shizen-ui/svelte';
+  
+  let items = $state([false, false, false]);
+  
+  const allChecked = $derived(items.every(Boolean));
+  const someChecked = $derived(items.some(Boolean) && !allChecked);
+  
+  let selectAll = $derived<boolean | 'mixed'>(
+    allChecked ? true : someChecked ? 'mixed' : false
+  );
+  
+  function toggleAll() {
+    const newState = !allChecked;
+    items = items.map(() => newState);
+  }
+</script>
+
+<Checkbox checked={selectAll} onclick={toggleAll}>
+  <Checkbox.Control />
+  <Checkbox.Content>
+    Select All
+  </Checkbox.Content>
+</Checkbox>
+
+<div class="ml-6 mt-2 space-y-2">
+  {#each items as item, i}
+    <Checkbox bind:checked={items[i]}>
+      <Checkbox.Control />
+      <Checkbox.Content>
+        Item {i + 1}
+      </Checkbox.Content>
+    </Checkbox>
+  {/each}
+</div>
+```
+
+### With Form Validation
+
+```svelte
+<script>
+  import { Checkbox } from '@shizen-ui/svelte';
+  
+  let preferences = $state({
+    marketing: false,
+    updates: false,
+    terms: false
+  });
+  
+  const canSubmit = $derived(preferences.terms);
+</script>
+
+<form>
+  <Checkbox bind:checked={preferences.marketing}>
+    <Checkbox.Control />
+    <Checkbox.Content>
+      Send me marketing emails
+    </Checkbox.Content>
+  </Checkbox>
+  
+  <Checkbox bind:checked={preferences.updates}>
+    <Checkbox.Control />
+    <Checkbox.Content>
+      Notify me of product updates
+    </Checkbox.Content>
+  </Checkbox>
+  
+  <Checkbox bind:checked={preferences.terms} invalid={!preferences.terms}>
+    <Checkbox.Control />
+    <Checkbox.Content>
+      I agree to the terms (required)
+    </Checkbox.Content>
+  </Checkbox>
+  
+  <button type="submit" disabled={!canSubmit}>
+    Submit
+  </button>
+</form>
+```
+
+## Accessibility
+
+- Uses a native `<input type="checkbox">` element for proper semantics
+- Supports keyboard navigation:
+  - **Space** or **Enter** to toggle
+  - **Tab** to focus (unless disabled)
+- Properly handles `aria-checked` attribute including `"mixed"` for indeterminate state
+- The underlying input has `indeterminate` property set when `checked="mixed"`
+- Disabled checkboxes have `tabindex="-1"` to remove from keyboard navigation
+- The entire checkbox container is clickable, improving usability
+- Data attributes (`data-checked`, `data-disabled`, `data-invalid`) are applied for styling
+
+```svelte
+<Checkbox checked aria-label="Accept terms">
+  <Checkbox.Control />
+  <Checkbox.Content>
+    Terms accepted
+  </Checkbox.Content>
+</Checkbox>
+```
+
+## Usage with CheckboxGroup
+
+When a Checkbox is placed inside a CheckboxGroup, it automatically inherits the group's state management:
+
+```svelte
+<script>
+  import { Checkbox, CheckboxGroup } from '@shizen-ui/svelte';
+  
+  let selected = $state<string[]>([]);
+</script>
+
+<CheckboxGroup bind:value={selected}>
+  <Checkbox value="option1">
+    <Checkbox.Control />
+    <Checkbox.Content>Option 1</Checkbox.Content>
+  </Checkbox>
+  
+  <Checkbox value="option2">
+    <Checkbox.Control />
+    <Checkbox.Content>Option 2</Checkbox.Content>
+  </Checkbox>
+  
+  <Checkbox value="option3">
+    <Checkbox.Control />
+    <Checkbox.Content>Option 3</Checkbox.Content>
+  </Checkbox>
+</CheckboxGroup>
+
+<p>Selected: {selected.join(', ')}</p>
+```
+
+<Tip>
+  The Checkbox component automatically detects when it's inside a CheckboxGroup and coordinates its checked state with the group's value array, eliminating the need for individual `bind:checked` on each checkbox.
+</Tip>
+
+## Context Propagation
+
+The Checkbox root component provides context to its sub-components:
+
+- `checked` - The current checked state (`boolean | "mixed"`)
+- `disabled` - Whether the checkbox is disabled
+- `invalid` - Whether the checkbox has validation errors
+- `id` - The checkbox input ID
+
+Sub-components automatically receive this context and don't need props passed explicitly.
+
+## Data Attributes
+
+The following data attributes are applied for styling:
+
+- `data-checked` - The checked state (`"true"`, `"false"`, or `"mixed"`)
+- `data-disabled` - Applied when disabled
+- `data-invalid` - Applied when invalid
+- `data-custom` - Applied to Indicator when using custom content

@@ -1,80 +1,456 @@
 ---
 title: "Quickstart"
-description: "Start building awesome documentation in minutes"
+description: "Build your first Shizen UI component in under 5 minutes"
 ---
 
-## Get started in three steps
+## Build Your First Component
 
-Get your documentation site running locally and make your first customization.
-
-### Step 1: Set up your local environment
-
-<AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
-    
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
-    
-    <Tip>Your preview updates automatically as you edit files.</Tip>
-  </Accordion>
-</AccordionGroup>
-
-### Step 2: Deploy your changes
-
-<AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
-    
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
-
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
-
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
-  </Accordion>
-</AccordionGroup>
-
-### Step 3: Go live
-
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
-
-## Next steps
-
-Now that you have your docs running, explore these key features:
-
-<CardGroup cols={2}>
-
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
-</Card>
-
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
-</Card>
-
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
-</Card>
-
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
-</Card>
-
-</CardGroup>
+This guide will walk you through creating a simple contact form using Shizen UI components. You'll learn the basics of importing, using, and customizing components.
 
 <Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
+  Make sure you've completed the [Installation](/installation) steps before starting this guide.
 </Note>
+
+<Steps>
+  <Step title="Create a new Svelte component">
+    Create a new file called `ContactForm.svelte` in your components directory:
+
+    ```svelte ContactForm.svelte
+    <script lang="ts">
+      import { Button, TextField, TextArea } from '@shizen-ui/svelte';
+      
+      let name = $state('');
+      let email = $state('');
+      let message = $state('');
+      
+      function handleSubmit() {
+        console.log('Form submitted:', { name, email, message });
+        // Add your form submission logic here
+      }
+    </script>
+
+    <form class="max-w-md space-y-6" onsubmit={(e) => {
+      e.preventDefault();
+      handleSubmit();
+    }}>
+      <h2 class="text-2xl font-bold">Contact Us</h2>
+      
+      <TextField>
+        <TextField.Label>Name</TextField.Label>
+        <TextField.Input bind:value={name} placeholder="John Doe" />
+      </TextField>
+      
+      <TextField>
+        <TextField.Label>Email</TextField.Label>
+        <TextField.Input 
+          bind:value={email} 
+          type="email" 
+          placeholder="john@example.com" 
+        />
+      </TextField>
+      
+      <TextField>
+        <TextField.Label>Message</TextField.Label>
+        <TextField.TextArea 
+          bind:value={message} 
+          placeholder="Your message here..." 
+          rows={4}
+        />
+      </TextField>
+      
+      <Button type="submit" variant="primary">
+        Send Message
+      </Button>
+    </form>
+    ```
+
+    <Tip>
+      Notice how we use Svelte 5's `$state` rune instead of `let` for reactive variables. This is the new way to manage state in Svelte 5!
+    </Tip>
+  </Step>
+
+  <Step title="Understanding the components">
+    Let's break down what each component does:
+
+    ### TextField (Compound Component)
+
+    `TextField` is a compound component that combines a label, input, description, and error message:
+
+    ```svelte
+    <TextField>
+      <TextField.Label>Email</TextField.Label>
+      <TextField.Input type="email" placeholder="you@example.com" />
+      <TextField.Description>We'll never share your email.</TextField.Description>
+    </TextField>
+    ```
+
+    ### Button
+
+    The `Button` component supports multiple variants and sizes:
+
+    ```svelte
+    <script>
+      import { Button } from '@shizen-ui/svelte';
+    </script>
+
+    <!-- Different variants -->
+    <Button variant="primary">Primary</Button>
+    <Button variant="secondary">Secondary</Button>
+    <Button variant="outline">Outline</Button>
+    <Button variant="ghost">Ghost</Button>
+    <Button variant="danger">Danger</Button>
+
+    <!-- Different sizes -->
+    <Button size="sm">Small</Button>
+    <Button size="md">Medium</Button>
+    <Button size="lg">Large</Button>
+    ```
+
+    ### Input (Standalone)
+
+    For simpler use cases, you can use the standalone `Input` component:
+
+    ```svelte
+    <script lang="ts">
+      import { Input } from '@shizen-ui/svelte';
+      
+      let username = $state('');
+    </script>
+
+    <Input 
+      bind:value={username} 
+      placeholder="Enter username" 
+      size="md"
+    />
+    ```
+  </Step>
+
+  <Step title="Add form validation">
+    Let's enhance our form with validation and error handling:
+
+    ```svelte ContactForm.svelte
+    <script lang="ts">
+      import { Button, TextField } from '@shizen-ui/svelte';
+      
+      let name = $state('');
+      let email = $state('');
+      let message = $state('');
+      
+      let errors = $state<Record<string, string>>({});
+      
+      function validateForm() {
+        const newErrors: Record<string, string> = {};
+        
+        if (!name.trim()) {
+          newErrors.name = 'Name is required';
+        }
+        
+        if (!email.trim()) {
+          newErrors.email = 'Email is required';
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          newErrors.email = 'Please enter a valid email';
+        }
+        
+        if (!message.trim()) {
+          newErrors.message = 'Message is required';
+        } else if (message.length < 10) {
+          newErrors.message = 'Message must be at least 10 characters';
+        }
+        
+        errors = newErrors;
+        return Object.keys(newErrors).length === 0;
+      }
+      
+      function handleSubmit() {
+        if (validateForm()) {
+          console.log('Form submitted:', { name, email, message });
+          // Reset form
+          name = '';
+          email = '';
+          message = '';
+          errors = {};
+        }
+      }
+    </script>
+
+    <form class="max-w-md space-y-6" onsubmit={(e) => {
+      e.preventDefault();
+      handleSubmit();
+    }}>
+      <h2 class="text-2xl font-bold">Contact Us</h2>
+      
+      <TextField invalid={!!errors.name}>
+        <TextField.Label>Name</TextField.Label>
+        <TextField.Input bind:value={name} placeholder="John Doe" />
+        {#if errors.name}
+          <TextField.FieldError>{errors.name}</TextField.FieldError>
+        {/if}
+      </TextField>
+      
+      <TextField invalid={!!errors.email}>
+        <TextField.Label>Email</TextField.Label>
+        <TextField.Input 
+          bind:value={email} 
+          type="email" 
+          placeholder="john@example.com" 
+        />
+        {#if errors.email}
+          <TextField.FieldError>{errors.email}</TextField.FieldError>
+        {:else}
+          <TextField.Description>
+            We'll never share your email with anyone.
+          </TextField.Description>
+        {/if}
+      </TextField>
+      
+      <TextField invalid={!!errors.message}>
+        <TextField.Label>Message</TextField.Label>
+        <TextField.TextArea 
+          bind:value={message} 
+          placeholder="Your message here..." 
+          rows={4}
+        />
+        {#if errors.message}
+          <TextField.FieldError>{errors.message}</TextField.FieldError>
+        {/if}
+      </TextField>
+      
+      <Button type="submit" variant="primary">
+        Send Message
+      </Button>
+    </form>
+    ```
+
+    <Note>
+      The `invalid` prop automatically updates ARIA attributes and applies error styling to the component.
+    </Note>
+  </Step>
+
+  <Step title="Customize styling">
+    Shizen UI components accept a `class` prop for custom styling with Tailwind CSS:
+
+    ```svelte
+    <script lang="ts">
+      import { Button, Input } from '@shizen-ui/svelte';
+    </script>
+
+    <!-- Add custom classes -->
+    <Input 
+      class="border-blue-500 focus:ring-blue-500" 
+      placeholder="Custom styled input"
+    />
+
+    <!-- Customize button -->
+    <Button 
+      class="uppercase tracking-wider" 
+      variant="primary"
+    >
+      Custom Button
+    </Button>
+    ```
+
+    The `class` prop is merged with the component's default classes using `tailwind-merge`, so your custom utilities will properly override defaults.
+
+    <Tip>
+      Learn more about customization in the [Styling Guide](/concepts/styling) and [Customization Guide](/guides/customization).
+    </Tip>
+  </Step>
+
+  <Step title="Explore more components">
+    Now that you've built a form, explore other components:
+
+    ```svelte
+    <script lang="ts">
+      import { 
+        Button, 
+        ButtonGroup,
+        Checkbox,
+        Radio,
+        RadioGroup,
+        InputGroup
+      } from '@shizen-ui/svelte';
+      
+      let agreed = $state(false);
+      let theme = $state('light');
+    </script>
+
+    <!-- Button Group -->
+    <ButtonGroup>
+      <Button>First</Button>
+      <Button>Second</Button>
+      <Button>Third</Button>
+    </ButtonGroup>
+
+    <!-- Checkbox -->
+    <Checkbox bind:checked={agreed}>
+      <Checkbox.Control>
+        <Checkbox.Indicator />
+      </Checkbox.Control>
+      <Checkbox.Content>
+        I agree to the terms and conditions
+      </Checkbox.Content>
+    </Checkbox>
+
+    <!-- Radio Group -->
+    <RadioGroup bind:value={theme}>
+      <Radio value="light">
+        <Radio.Control>
+          <Radio.Indicator />
+        </Radio.Control>
+        <Radio.Content>Light Mode</Radio.Content>
+      </Radio>
+      <Radio value="dark">
+        <Radio.Control>
+          <Radio.Indicator />
+        </Radio.Control>
+        <Radio.Content>Dark Mode</Radio.Content>
+      </Radio>
+    </RadioGroup>
+
+    <!-- Input Group with Prefix -->
+    <InputGroup>
+      <InputGroup.Prefix>$</InputGroup.Prefix>
+      <InputGroup.Input type="number" placeholder="0.00" />
+    </InputGroup>
+    ```
+  </Step>
+</Steps>
+
+## Complete Example
+
+Here's the full working contact form you can copy and paste:
+
+```svelte ContactForm.svelte
+<script lang="ts">
+  import { Button, TextField } from '@shizen-ui/svelte';
+  
+  let name = $state('');
+  let email = $state('');
+  let message = $state('');
+  let errors = $state<Record<string, string>>({});
+  let submitted = $state(false);
+  
+  function validateForm() {
+    const newErrors: Record<string, string> = {};
+    
+    if (!name.trim()) newErrors.name = 'Name is required';
+    if (!email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      newErrors.email = 'Please enter a valid email';
+    }
+    if (!message.trim()) {
+      newErrors.message = 'Message is required';
+    } else if (message.length < 10) {
+      newErrors.message = 'Message must be at least 10 characters';
+    }
+    
+    errors = newErrors;
+    return Object.keys(newErrors).length === 0;
+  }
+  
+  function handleSubmit() {
+    if (validateForm()) {
+      console.log('Form submitted:', { name, email, message });
+      submitted = true;
+      
+      // Reset after 3 seconds
+      setTimeout(() => {
+        name = '';
+        email = '';
+        message = '';
+        submitted = false;
+      }, 3000);
+    }
+  }
+</script>
+
+<div class="max-w-md mx-auto p-6">
+  {#if submitted}
+    <div class="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg">
+      <strong>Success!</strong> Your message has been sent.
+    </div>
+  {:else}
+    <form class="space-y-6" onsubmit={(e) => {
+      e.preventDefault();
+      handleSubmit();
+    }}>
+      <h2 class="text-2xl font-bold text-gray-900">Contact Us</h2>
+      
+      <TextField invalid={!!errors.name}>
+        <TextField.Label>Name</TextField.Label>
+        <TextField.Input bind:value={name} placeholder="John Doe" />
+        {#if errors.name}
+          <TextField.FieldError>{errors.name}</TextField.FieldError>
+        {/if}
+      </TextField>
+      
+      <TextField invalid={!!errors.email}>
+        <TextField.Label>Email</TextField.Label>
+        <TextField.Input 
+          bind:value={email} 
+          type="email" 
+          placeholder="john@example.com" 
+        />
+        {#if errors.email}
+          <TextField.FieldError>{errors.email}</TextField.FieldError>
+        {:else}
+          <TextField.Description>
+            We'll never share your email with anyone.
+          </TextField.Description>
+        {/if}
+      </TextField>
+      
+      <TextField invalid={!!errors.message}>
+        <TextField.Label>Message</TextField.Label>
+        <TextField.TextArea 
+          bind:value={message} 
+          placeholder="Your message here..." 
+          rows={4}
+        />
+        {#if errors.message}
+          <TextField.FieldError>{errors.message}</TextField.FieldError>
+        {/if}
+      </TextField>
+      
+      <Button type="submit" variant="primary" class="w-full">
+        Send Message
+      </Button>
+    </form>
+  {/if}
+</div>
+```
+
+## What You've Learned
+
+In this quickstart, you've learned how to:
+
+- Import and use Shizen UI components
+- Build forms with compound components like `TextField`
+- Use Svelte 5's `$state` rune for reactive state management
+- Add form validation and error handling
+- Customize components with Tailwind CSS classes
+- Work with different component variants and sizes
+
+## Next Steps
+
+Now that you understand the basics, dive deeper into Shizen UI:
+
+<CardGroup cols={2}>
+  <Card title="Button Component" icon="hand-pointer" href="/components/button">
+    Explore all button variants, sizes, and features
+  </Card>
+  <Card title="Input Components" icon="keyboard" href="/components/input">
+    Learn about Input, TextField, and InputGroup
+  </Card>
+  <Card title="Form Validation" icon="circle-check" href="/components/text-field">
+    Master form validation with compound components
+  </Card>
+  <Card title="Customization" icon="palette" href="/guides/customization">
+    Create custom variants and override default styles
+  </Card>
+</CardGroup>
+
+<Tip>
+  Check out the [Component Library](/components/button) to see all available components with live, interactive examples.
+</Tip>

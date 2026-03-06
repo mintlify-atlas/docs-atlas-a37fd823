@@ -1,0 +1,572 @@
+---
+title: Animations
+description: Built-in animations, transitions, and micro-interactions in Shizen UI components
+---
+
+## Overview
+
+Shizen UI components feature subtle, performant animations that enhance user experience without being distracting. All animations are built with CSS transitions and transforms for optimal performance.
+
+## Built-in Animations
+
+### Transition System
+
+Components use consistent transition durations and easing:
+
+```css
+.button {
+  @apply transition-colors duration-200;
+}
+
+.input {
+  @apply transition-all duration-200;
+}
+
+.checkbox__control {
+  @apply transition-all duration-200;
+}
+
+.checkbox__indicator {
+  @apply transition-transform duration-200;
+}
+```
+
+### Standard Duration
+
+Most interactive transitions use a **200ms** duration for a responsive feel:
+
+<CodeGroup>
+
+```css Button Transitions
+.button {
+  transition-property: color, background-color;
+  transition-duration: 200ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+```
+
+```css Input Transitions
+.input {
+  transition-property: all;
+  transition-duration: 200ms;
+}
+```
+
+```css Checkbox Transitions
+.checkbox__control {
+  transition-property: all;
+  transition-duration: 200ms;
+}
+
+.checkbox__indicator {
+  transition-property: transform;
+  transition-duration: 200ms;
+}
+```
+
+</CodeGroup>
+
+## Component Animations
+
+### Button Hover Effects
+
+Buttons smoothly transition background colors on hover:
+
+```css
+.button {
+  background-color: var(--btn-bg);
+  transition-property: background-color, color;
+  transition-duration: 200ms;
+}
+
+.button:hover:not(:disabled) {
+  background-color: var(--btn-bg-hover);
+}
+```
+
+Usage example:
+
+```tsx
+import { Button } from "@shizen-ui/react";
+
+<Button variant="primary">
+  Hover me
+</Button>
+```
+
+### Input Focus Animations
+
+Inputs animate ring appearance and background color on focus:
+
+```css
+.input {
+  background-color: var(--input-bg);
+  transition: all 200ms;
+}
+
+.input:hover:not(:disabled, [data-invalid="true"]) {
+  background-color: var(--input-bg-hover);
+}
+
+.input:focus {
+  @apply status-focused-field;  /* Adds ring-2 transition */
+  background-color: var(--input-bg-hover);
+}
+```
+
+The focus ring utility provides consistent focus states:
+
+```css
+@utility focus-field-ring {
+  @apply ring-2 ring-focus ring-offset-0 outline-none;
+}
+```
+
+### Checkbox Scale Animation
+
+Checkbox indicators scale from 0 to 100% when checked:
+
+```css
+.checkbox__indicator {
+  @apply scale-0 transition-transform duration-200;
+}
+
+.checkbox__indicator[data-checked="true"],
+.checkbox__indicator[data-checked="mixed"],
+.checkbox[aria-checked="true"] .checkbox__indicator,
+.checkbox[aria-checked="mixed"] .checkbox__indicator {
+  @apply scale-100;
+}
+```
+
+This creates a satisfying "pop" effect:
+
+```tsx
+import { Checkbox } from "@shizen-ui/react";
+
+<Checkbox>
+  Watch the checkmark animate
+</Checkbox>
+```
+
+### Checkbox Background Transition
+
+Checkbox backgrounds smoothly transition colors when checked:
+
+```css
+.checkbox__control {
+  background-color: var(--checkbox-bg);
+  transition: all 200ms;
+}
+
+.checkbox[data-checked="true"],
+.checkbox[aria-checked="true"] {
+  --checkbox-bg: var(--color-accent);
+  --checkbox-bg-hover: var(--color-accent-hover);
+}
+```
+
+### Disabled State Transitions
+
+Disabled states transition opacity:
+
+```css
+.button:disabled,
+.button[aria-disabled="true"] {
+  @apply status-disabled;
+}
+
+@utility status-disabled {
+  opacity: var(--disabled-opacity);  /* 0.5 */
+  cursor: var(--cursor-disabled);
+}
+```
+
+The opacity change is animated through the existing transition:
+
+```tsx
+import { Button } from "@shizen-ui/react";
+import { useState } from "react";
+
+function AnimatedButton() {
+  const [disabled, setDisabled] = useState(false);
+  
+  return (
+    <Button 
+      disabled={disabled}
+      onClick={() => setDisabled(true)}
+    >
+      Click to disable
+    </Button>
+  );
+}
+```
+
+## Micro-interactions
+
+### Hover States
+
+All interactive elements have subtle hover states:
+
+<CodeGroup>
+
+```css Button Hover
+.button:hover:not(:disabled) {
+  background-color: var(--btn-bg-hover);
+}
+```
+
+```css Input Hover
+.input:hover:not(:disabled, [data-invalid="true"]) {
+  background-color: var(--input-bg-hover);
+}
+```
+
+```css Checkbox Hover
+.checkbox__control:hover:not([data-disabled="true"]) {
+  background-color: var(--checkbox-bg-hover);
+  border-color: var(--checkbox-bg-hover);
+}
+```
+
+</CodeGroup>
+
+### Active States
+
+Buttons and controls respond to clicks with visual feedback through the existing transition system.
+
+### Invalid States
+
+Invalid inputs animate their ring color:
+
+```css
+.input[data-invalid="true"] {
+  @apply status-invalid-field;
+}
+
+@utility invalid-field-ring {
+  @apply ring-2 ring-danger ring-offset-0 outline-none;
+}
+```
+
+The ring color transitions smoothly when validation state changes:
+
+```tsx
+import { Input } from "@shizen-ui/react";
+import { useState } from "react";
+
+function ValidatedInput() {
+  const [value, setValue] = useState("");
+  const isInvalid = value.length > 0 && value.length < 3;
+  
+  return (
+    <Input
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      data-invalid={isInvalid}
+    />
+  );
+}
+```
+
+## Customizing Animations
+
+### Adjusting Duration
+
+Override transition duration using Tailwind utilities:
+
+```tsx
+import { Button } from "@shizen-ui/react";
+
+<Button className="duration-300">
+  Slower transition
+</Button>
+
+<Button className="duration-100">
+  Faster transition
+</Button>
+```
+
+### Custom Easing
+
+Apply custom easing curves:
+
+```tsx
+import { Button } from "@shizen-ui/react";
+
+<Button className="ease-in-out">
+  Ease in-out
+</Button>
+
+<Button className="ease-bounce">
+  Bounce easing
+</Button>
+```
+
+### Disabling Transitions
+
+Disable transitions for specific components:
+
+```tsx
+import { Button } from "@shizen-ui/react";
+
+<Button className="transition-none">
+  No animations
+</Button>
+```
+
+### Custom Animations
+
+Add custom animations using Tailwind's animation utilities:
+
+```tsx
+import { Button } from "@shizen-ui/react";
+
+<Button className="animate-pulse">
+  Pulsing button
+</Button>
+```
+
+Or define custom animations:
+
+```css
+@keyframes slide-in {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.slide-in {
+  animation: slide-in 300ms ease-out;
+}
+```
+
+```tsx
+<Button className="slide-in">
+  Slides in
+</Button>
+```
+
+## Performance Considerations
+
+### Hardware Acceleration
+
+Shizen UI animations use transform and opacity for GPU acceleration:
+
+```css
+/* Good - GPU accelerated */
+.checkbox__indicator {
+  transform: scale(0);
+  transition: transform 200ms;
+}
+
+.checkbox__indicator[data-checked="true"] {
+  transform: scale(1);
+}
+```
+
+<Warning>
+Avoid animating properties like `width`, `height`, or `margin` as they trigger layout recalculation and are not GPU-accelerated.
+</Warning>
+
+### Optimized Properties
+
+The most performant properties to animate:
+
+1. **transform** - GPU accelerated, no layout recalculation
+2. **opacity** - GPU accelerated, no layout recalculation
+3. **color** / **background-color** - Relatively efficient
+
+### will-change
+
+For frequently animated elements, use `will-change`:
+
+```css
+.frequently-animated {
+  will-change: transform, opacity;
+}
+```
+
+<Note>
+Only use `will-change` on elements that will definitely animate. Overuse can hurt performance.
+</Note>
+
+### Respecting User Preferences
+
+Respect users who prefer reduced motion:
+
+```css
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+```
+
+Implement in your app:
+
+```tsx
+import { useEffect, useState } from "react";
+
+function useReducedMotion() {
+  const [reducedMotion, setReducedMotion] = useState(false);
+  
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReducedMotion(mediaQuery.matches);
+    
+    const handler = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
+    mediaQuery.addEventListener("change", handler);
+    return () => mediaQuery.removeEventListener("change", handler);
+  }, []);
+  
+  return reducedMotion;
+}
+
+function App() {
+  const reducedMotion = useReducedMotion();
+  
+  return (
+    <div className={reducedMotion ? "motion-reduce" : ""}>
+      {/* Your app */}
+    </div>
+  );
+}
+```
+
+## Animation Patterns
+
+### Staggered Animations
+
+Create staggered animations for lists:
+
+```tsx
+function StaggeredList({ items }) {
+  return (
+    <div>
+      {items.map((item, index) => (
+        <div
+          key={item.id}
+          className="animate-fade-in"
+          style={{ animationDelay: `${index * 100}ms` }}
+        >
+          {item.content}
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+### Enter/Exit Animations
+
+Use libraries like Framer Motion for complex enter/exit animations:
+
+```tsx
+import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@shizen-ui/react";
+
+function Modal({ isOpen, onClose }) {
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.9 }}
+          transition={{ duration: 0.2 }}
+        >
+          <Button onClick={onClose}>Close</Button>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+```
+
+### Loading States
+
+Animate loading states:
+
+```tsx
+import { Button } from "@shizen-ui/react";
+
+function LoadingButton({ isLoading, children, ...props }) {
+  return (
+    <Button {...props} disabled={isLoading}>
+      {isLoading ? (
+        <span className="animate-spin">⌛</span>
+      ) : (
+        children
+      )}
+    </Button>
+  );
+}
+```
+
+## Best Practices
+
+<AccordionGroup>
+
+<Accordion title="Keep animations subtle">
+  Animations should enhance, not distract. Use durations between 150-300ms for most interactions.
+</Accordion>
+
+<Accordion title="Use consistent timing">
+  Stick to the standard 200ms duration across your application for consistency:
+  
+  ```css
+  transition-duration: 200ms;
+  ```
+</Accordion>
+
+<Accordion title="Animate performant properties">
+  Prefer `transform` and `opacity` over layout properties:
+  
+  ```css
+  /* Good */
+  transition: transform 200ms, opacity 200ms;
+  
+  /* Avoid */
+  transition: width 200ms, height 200ms;
+  ```
+</Accordion>
+
+<Accordion title="Test on low-end devices">
+  Always test animations on slower devices to ensure they remain smooth.
+</Accordion>
+
+<Accordion title="Provide opt-out for motion-sensitive users">
+  Respect the `prefers-reduced-motion` media query:
+  
+  ```css
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+  ```
+</Accordion>
+
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Styling" icon="paintbrush" href="/concepts/styling">
+    Learn about the styling system
+  </Card>
+  <Card title="Theming" icon="palette" href="/concepts/theming">
+    Customize the theme and colors
+  </Card>
+</CardGroup>

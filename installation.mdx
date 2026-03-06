@@ -1,0 +1,225 @@
+---
+title: "Installation"
+description: "Install and configure Shizen UI in your Svelte 5 project"
+---
+
+## Prerequisites
+
+Before installing Shizen UI, make sure you have:
+
+- **Svelte 5.0.0 or later**: Shizen UI is built exclusively for Svelte 5
+- **Tailwind CSS v4**: Required for styling and theming
+- **Node.js 18+**: For package management and build tools
+
+<Warning>
+  Shizen UI requires Svelte 5 and will not work with Svelte 4 or earlier versions. Make sure your project is using Svelte 5 before proceeding.
+</Warning>
+
+## Install the Package
+
+Install Shizen UI using your preferred package manager:
+
+<CodeGroup>
+
+```bash bun
+bun add @shizen-ui/svelte
+```
+
+```bash npm
+npm install @shizen-ui/svelte
+```
+
+```bash pnpm
+pnpm add @shizen-ui/svelte
+```
+
+```bash yarn
+yarn add @shizen-ui/svelte
+```
+
+</CodeGroup>
+
+This will install both the `@shizen-ui/svelte` component library and its dependency `@shizen-ui/styles` which contains the styling system.
+
+## Setup Tailwind CSS v4
+
+Shizen UI requires Tailwind CSS v4 to be configured in your project. Follow these steps:
+
+<Steps>
+  <Step title="Install Tailwind CSS v4">
+    Install Tailwind CSS v4 and the Vite plugin:
+
+    <CodeGroup>
+
+    ```bash bun
+    bun add -d tailwindcss @tailwindcss/vite
+    ```
+
+    ```bash npm
+    npm install -D tailwindcss @tailwindcss/vite
+    ```
+
+    ```bash pnpm
+    pnpm add -D tailwindcss @tailwindcss/vite
+    ```
+
+    ```bash yarn
+    yarn add -D tailwindcss @tailwindcss/vite
+    ```
+
+    </CodeGroup>
+  </Step>
+
+  <Step title="Configure Vite">
+    Add the Tailwind CSS plugin to your `vite.config.ts`:
+
+    ```typescript vite.config.ts
+    import { defineConfig } from 'vite';
+    import { sveltekit } from '@sveltejs/kit/vite';
+    import tailwindcss from '@tailwindcss/vite';
+
+    export default defineConfig({
+      plugins: [
+        sveltekit(),
+        tailwindcss() // Add this line
+      ]
+    });
+    ```
+
+    <Note>
+      If you're not using SvelteKit, replace `sveltekit()` with the appropriate Svelte plugin for your setup.
+    </Note>
+  </Step>
+
+  <Step title="Import Shizen UI Styles">
+    Create or update your main CSS file (e.g., `src/app.css`) to import Tailwind CSS and Shizen UI styles:
+
+    ```css src/app.css
+    @import "tailwindcss";
+    @import "@shizen-ui/styles/styles";
+    ```
+
+    The `@shizen-ui/styles/styles` import includes:
+    - Tailwind CSS directives
+    - Shizen UI theme variables and CSS custom properties
+    - Component-specific styles
+
+    <Tip>
+      The order matters! Make sure to import Tailwind first, then Shizen UI styles.
+    </Tip>
+  </Step>
+
+  <Step title="Import CSS in Your App">
+    Import your CSS file in your root layout or main entry point:
+
+    **SvelteKit** (`src/routes/+layout.svelte`):
+    ```svelte
+    <script>
+      import '../app.css';
+    </script>
+
+    <slot />
+    ```
+
+    **Vite/Svelte** (`src/main.ts`):
+    ```typescript
+    import './app.css';
+    import App from './App.svelte';
+
+    const app = new App({
+      target: document.getElementById('app')!
+    });
+
+    export default app;
+    ```
+  </Step>
+</Steps>
+
+## Verify Installation
+
+Test that everything is working by creating a simple component:
+
+```svelte +page.svelte
+<script lang="ts">
+  import { Button } from '@shizen-ui/svelte';
+</script>
+
+<Button>Hello Shizen UI!</Button>
+```
+
+If the button renders with proper styling, you're all set!
+
+## TypeScript Configuration (Optional)
+
+For optimal TypeScript support, ensure your `tsconfig.json` includes:
+
+```json tsconfig.json
+{
+  "compilerOptions": {
+    "moduleResolution": "bundler",
+    "module": "ESNext",
+    "target": "ESNext",
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "strict": true
+  }
+}
+```
+
+## Monorepo Setup
+
+If you're using a monorepo (with pnpm workspaces, npm workspaces, etc.), make sure to:
+
+1. Install dependencies at the workspace root
+2. Ensure `@shizen-ui/svelte` and its peer dependencies are available to your app
+3. Configure path aliases if needed for importing styles
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Components have no styling">
+    Make sure you've:
+    1. Imported `@shizen-ui/styles/styles` in your CSS file
+    2. Imported your CSS file in your app's entry point
+    3. Configured the Tailwind CSS Vite plugin correctly
+    4. Installed Tailwind CSS v4 (not v3)
+  </Accordion>
+
+  <Accordion title="TypeScript errors with component props">
+    Ensure you're using Svelte 5 and have `"moduleResolution": "bundler"` in your `tsconfig.json`. Also verify that your editor's Svelte extension is up to date.
+  </Accordion>
+
+  <Accordion title="Import errors with @shizen-ui/styles">
+    The styles package is automatically installed as a dependency of `@shizen-ui/svelte`. If you're having import issues, try:
+    ```bash
+    rm -rf node_modules
+    npm install
+    ```
+  </Accordion>
+
+  <Accordion title="Tailwind v4 vs v3 compatibility">
+    Shizen UI requires Tailwind CSS v4 and will not work with v3. The configuration syntax and import method are different between versions. Make sure you're using v4 and following the import-based configuration shown above.
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+Now that Shizen UI is installed, you're ready to build:
+
+<CardGroup cols={2}>
+  <Card title="Quickstart Guide" icon="rocket" href="/quickstart">
+    Build your first component with a step-by-step guide
+  </Card>
+  <Card title="Component Library" icon="cube" href="/components/button">
+    Explore all available components with live examples
+  </Card>
+  <Card title="Styling Guide" icon="paintbrush" href="/concepts/styling">
+    Learn how to customize components with Tailwind CSS
+  </Card>
+  <Card title="Theming" icon="palette" href="/concepts/theming">
+    Create custom themes and design systems
+  </Card>
+</CardGroup>
+
+<Tip>
+  Ready to customize? Check out the [Customization Guide](/guides/customization) to learn how to override default styles and create your own variants.
+</Tip>

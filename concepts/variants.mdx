@@ -1,0 +1,532 @@
+---
+title: Variants
+description: Learn how to use and customize component variants with tailwind-variants
+---
+
+## Overview
+
+Shizen UI uses [tailwind-variants](https://www.tailwind-variants.org/) to create flexible, type-safe component variants. This powerful library enables complex variant combinations with excellent TypeScript support.
+
+## How Variants Work
+
+### Basic Variant Structure
+
+Variants map variant options to CSS class names:
+
+```typescript
+import { tv, type VariantProps } from "tailwind-variants";
+
+export const buttonStyles = tv({
+  base: "button",
+  variants: {
+    variant: {
+      primary: "button--primary",
+      secondary: "button--secondary",
+      tertiary: "button--tertiary",
+      danger: "button--danger",
+      ghost: "button--ghost",
+      outline: "button--outline",
+      "soft-danger": "button--soft-danger"
+    },
+    size: {
+      sm: "button--sm",
+      md: "button--md",
+      lg: "button--lg"
+    },
+    iconOnly: {
+      true: "button--icon-only"
+    }
+  },
+  defaultVariants: {
+    variant: "primary",
+    size: "md"
+  }
+});
+
+export type ButtonVariants = VariantProps<typeof buttonStyles>;
+```
+
+The classes are then styled in CSS:
+
+```css
+@layer components {
+  .button {
+    @apply relative overflow-hidden inline-flex items-center justify-center;
+    @apply rounded-control font-medium transition-colors duration-200;
+  }
+  
+  .button--primary {
+    --btn-bg: var(--color-accent);
+    --btn-fg: var(--color-accent-foreground);
+    --btn-bg-hover: var(--color-accent-hover);
+  }
+  
+  .button--sm {
+    @apply h-control-sm px-3 text-sm;
+  }
+}
+```
+
+### Using Variants in Components
+
+```tsx
+import { buttonStyles, type ButtonVariants } from "@shizen-ui/styles";
+
+interface ButtonProps extends ButtonVariants {
+  children: React.ReactNode;
+  className?: string;
+}
+
+export function Button({ 
+  variant, 
+  size, 
+  iconOnly,
+  className,
+  children 
+}: ButtonProps) {
+  return (
+    <button className={buttonStyles({ variant, size, iconOnly, className })}>
+      {children}
+    </button>
+  );
+}
+```
+
+## Available Variant Options
+
+### Button Variants
+
+<CodeGroup>
+
+```typescript Variant Options
+variant: {
+  primary: "button--primary",       // Accent background
+  secondary: "button--secondary",   // Control background, accent text
+  tertiary: "button--tertiary",     // Control background, secondary text
+  danger: "button--danger",         // Danger background
+  ghost: "button--ghost",           // Transparent background
+  outline: "button--outline",       // Border with transparent background
+  "soft-danger": "button--soft-danger" // Control background, danger text
+}
+```
+
+```typescript Size Options
+size: {
+  sm: "button--sm",  // 32px height
+  md: "button--md",  // 36px height
+  lg: "button--lg"   // 40px height
+}
+```
+
+```typescript Boolean Variants
+iconOnly: {
+  true: "button--icon-only"  // Square shape for icon buttons
+}
+```
+
+</CodeGroup>
+
+### Button Group Variants
+
+```typescript
+export const buttonGroupStyles = tv({
+  base: "button-group",
+  variants: {
+    variant: {
+      primary: "button-group--primary",
+      secondary: "button-group--secondary",
+      tertiary: "button-group--tertiary",
+      danger: "button-group--danger",
+      ghost: "button-group--ghost",
+      outline: "button-group--outline",
+      "soft-danger": "button-group--soft-danger"
+    },
+    size: {
+      sm: "button-group--sm",
+      md: "button-group--md",
+      lg: "button-group--lg"
+    },
+    orientation: {
+      horizontal: "button-group--horizontal",
+      vertical: "button-group--vertical"
+    },
+    hideSeparator: {
+      false: "button-group--separators",
+      true: ""
+    }
+  },
+  defaultVariants: {
+    variant: "primary",
+    size: "md",
+    orientation: "horizontal",
+    hideSeparator: false
+  }
+});
+```
+
+### Input Variants
+
+```typescript
+export const inputStyles = tv({
+  base: "input",
+  variants: {
+    size: {
+      sm: "input--sm",  // 32px height
+      md: "input--md",  // 36px height
+      lg: "input--lg"   // 40px height
+    }
+  },
+  defaultVariants: {
+    size: "md"
+  }
+});
+```
+
+### TextArea Variants
+
+```typescript
+export const textAreaStyles = tv({
+  base: "textarea",
+  variants: {
+    fullWidth: {
+      true: "textarea--full-width"
+    }
+  },
+  defaultVariants: {
+    fullWidth: false
+  }
+});
+```
+
+## Compound Variants
+
+Compound variants apply styles when multiple variant conditions are met:
+
+```typescript
+export const buttonStyles = tv({
+  base: "button",
+  variants: {
+    iconOnly: {
+      true: "button--icon-only"
+    },
+    size: {
+      sm: "button--sm",
+      md: "button--md",
+      lg: "button--lg"
+    }
+  },
+  compoundVariants: [
+    {
+      iconOnly: true,
+      size: "sm",
+      class: "button--icon-only--sm"  // Applied when both conditions match
+    },
+    {
+      iconOnly: true,
+      size: "md",
+      class: "button--icon-only--md"
+    },
+    {
+      iconOnly: true,
+      size: "lg",
+      class: "button--icon-only--lg"
+    }
+  ]
+});
+```
+
+The compound variant classes handle special sizing:
+
+```css
+.button--icon-only--sm {
+  @apply size-control-sm;  /* Square 32x32 */
+}
+
+.button--icon-only--md {
+  @apply size-control-md;  /* Square 36x36 */
+}
+
+.button--icon-only--lg {
+  @apply size-control-lg;  /* Square 40x40 */
+}
+```
+
+## Slot Variants
+
+Slot variants style multiple parts of a component:
+
+```typescript
+export const checkboxStyles = tv({
+  slots: {
+    base: "checkbox",
+    control: "checkbox__control",
+    indicator: "checkbox__indicator",
+    content: "checkbox__content"
+  }
+});
+```
+
+Usage:
+
+```tsx
+const styles = checkboxStyles();
+
+<label className={styles.base()}>
+  <div className={styles.control()}>
+    <div className={styles.indicator()}>
+      <CheckIcon />
+    </div>
+  </div>
+  <div className={styles.content()}>
+    Label text
+  </div>
+</label>
+```
+
+## Creating Custom Variants
+
+### Extending Existing Variants
+
+Create a new variant file based on existing patterns:
+
+```typescript
+// custom-button.styles.ts
+import { tv, type VariantProps } from "tailwind-variants";
+import { buttonStyles } from "@shizen-ui/styles";
+
+export const customButtonStyles = tv({
+  extend: buttonStyles,
+  variants: {
+    variant: {
+      // Add new variants
+      brand: "button--brand",
+      premium: "button--premium"
+    },
+    rounded: {
+      true: "rounded-full",
+      false: "rounded-control"
+    }
+  }
+});
+```
+
+Define the CSS:
+
+```css
+.button--brand {
+  --btn-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --btn-fg: #ffffff;
+}
+
+.button--premium {
+  --btn-bg: #ffd700;
+  --btn-fg: #000000;
+  @apply font-bold shadow-lg;
+}
+```
+
+### Creating New Component Variants
+
+```typescript
+// card.styles.ts
+import { tv, type VariantProps } from "tailwind-variants";
+
+export const cardStyles = tv({
+  base: "card",
+  variants: {
+    variant: {
+      default: "card--default",
+      bordered: "card--bordered",
+      elevated: "card--elevated"
+    },
+    padding: {
+      none: "p-0",
+      sm: "p-4",
+      md: "p-6",
+      lg: "p-8"
+    }
+  },
+  defaultVariants: {
+    variant: "default",
+    padding: "md"
+  }
+});
+
+export type CardVariants = VariantProps<typeof cardStyles>;
+```
+
+## Composing Variants
+
+### Variant Composition
+
+Combine multiple variant definitions:
+
+```typescript
+import { tv } from "tailwind-variants";
+
+const baseStyles = tv({
+  base: "base-component",
+  variants: {
+    size: {
+      sm: "text-sm",
+      md: "text-base",
+      lg: "text-lg"
+    }
+  }
+});
+
+const enhancedStyles = tv({
+  extend: baseStyles,
+  variants: {
+    variant: {
+      primary: "bg-accent text-accent-foreground",
+      secondary: "bg-control text-control-foreground"
+    }
+  }
+});
+```
+
+### Responsive Variants
+
+Use Tailwind's responsive utilities with variants:
+
+```typescript
+export const responsiveStyles = tv({
+  base: "responsive-component",
+  variants: {
+    size: {
+      sm: "text-sm md:text-base lg:text-lg",
+      md: "text-base md:text-lg lg:text-xl",
+      lg: "text-lg md:text-xl lg:text-2xl"
+    },
+    hide: {
+      mobile: "hidden md:block",
+      desktop: "block md:hidden"
+    }
+  }
+});
+```
+
+## Type Safety
+
+### Extracting Variant Types
+
+```typescript
+import { type VariantProps } from "tailwind-variants";
+import { buttonStyles } from "@shizen-ui/styles";
+
+// Extract variant prop types
+type ButtonVariants = VariantProps<typeof buttonStyles>;
+
+// Use in component props
+interface ButtonProps extends ButtonVariants {
+  children: React.ReactNode;
+  onClick?: () => void;
+}
+```
+
+### Type-Safe Variant Values
+
+```typescript
+// Type is inferred automatically
+const button = buttonStyles({ 
+  variant: "primary",  // ✓ Valid
+  size: "md"           // ✓ Valid
+});
+
+const invalid = buttonStyles({ 
+  variant: "invalid"   // ✗ TypeScript error
+});
+```
+
+## Best Practices
+
+<AccordionGroup>
+
+<Accordion title="Use semantic variant names">
+  Choose variant names that describe purpose, not appearance:
+  
+  ```typescript
+  // Good
+  variant: { primary, secondary, danger }
+  
+  // Less ideal
+  variant: { blue, gray, red }
+  ```
+</Accordion>
+
+<Accordion title="Set sensible defaults">
+  Always provide default variants for required options:
+  
+  ```typescript
+  defaultVariants: {
+    variant: "primary",
+    size: "md"
+  }
+  ```
+</Accordion>
+
+<Accordion title="Keep variant complexity manageable">
+  If you need many variant combinations, consider splitting into multiple components or using composition.
+</Accordion>
+
+<Accordion title="Use compound variants for special cases">
+  Compound variants are perfect for handling interactions between variants:
+  
+  ```typescript
+  compoundVariants: [
+    {
+      variant: "primary",
+      size: "lg",
+      class: "shadow-lg"  // Large primary buttons get extra shadow
+    }
+  ]
+  ```
+</Accordion>
+
+<Accordion title="Leverage TypeScript">
+  Export and use the `VariantProps` type for full type safety:
+  
+  ```typescript
+  export type ButtonVariants = VariantProps<typeof buttonStyles>;
+  ```
+</Accordion>
+
+</AccordionGroup>
+
+## Performance Considerations
+
+<Note>
+Variant class names are generated at build time by tailwind-variants. This means zero runtime overhead for variant resolution.
+</Note>
+
+### Optimization Tips
+
+1. **Avoid dynamic variant values** - Use predefined variants instead of computed values
+2. **Use className for one-off styles** - Don't create variants for single-use cases
+3. **Memoize variant calls** - If passing complex props, consider memoization
+
+```tsx
+import { useMemo } from "react";
+import { buttonStyles } from "@shizen-ui/styles";
+
+function OptimizedButton({ variant, size, className }) {
+  const classes = useMemo(
+    () => buttonStyles({ variant, size, className }),
+    [variant, size, className]
+  );
+  
+  return <button className={classes} />;
+}
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Styling" icon="paintbrush" href="/concepts/styling">
+    Learn about the styling system and utilities
+  </Card>
+  <Card title="Animations" icon="sparkles" href="/concepts/animations">
+    Explore animations and transitions
+  </Card>
+</CardGroup>

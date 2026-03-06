@@ -1,0 +1,283 @@
+---
+title: '@shizen-ui/styles'
+description: 'Core styles and utilities for Shizen UI'
+---
+
+## Overview
+
+The `@shizen-ui/styles` package provides the foundational styling system for Shizen UI. It includes CSS files, utility functions, and variant definitions built on Tailwind CSS v4.
+
+## Installation
+
+```bash
+npm install @shizen-ui/styles
+```
+
+## Package Information
+
+<ResponseField name="version" type="string" default="0.0.1">
+  Current package version
+</ResponseField>
+
+<ResponseField name="description" type="string">
+  Core styles and Tailwind v4 configuration for shizen-ui
+</ResponseField>
+
+<ResponseField name="dependencies" type="object">
+  <ParamField name="clsx" type="string" default="^2.1.1">
+    Utility for constructing className strings conditionally
+  </ParamField>
+  
+  <ParamField name="tailwind-merge" type="string" default="^3.0.0">
+    Utility for merging Tailwind CSS classes without style conflicts
+  </ParamField>
+  
+  <ParamField name="tailwind-variants" type="string" default="^0.3.1">
+    Framework-agnostic API for creating type-safe component variants
+  </ParamField>
+</ResponseField>
+
+<ResponseField name="devDependencies" type="object">
+  <ParamField name="tailwindcss" type="string" default="^4.0.0">
+    Tailwind CSS v4 for styling
+  </ParamField>
+</ResponseField>
+
+## Package Exports
+
+The package provides multiple export paths:
+
+### JavaScript/TypeScript API
+
+```typescript
+import { cn, buttonStyles, inputStyles } from '@shizen-ui/styles';
+```
+
+**Source:** `packages/styles/src/index.ts`
+
+### CSS Exports
+
+```typescript
+// Main stylesheet
+import '@shizen-ui/styles/styles';
+
+// Individual component styles
+import '@shizen-ui/styles/components/button.css';
+import '@shizen-ui/styles/components/input.css';
+
+// Theme utilities
+import '@shizen-ui/styles/theme/variables.css';
+import '@shizen-ui/styles/theme/utilities.css';
+```
+
+## Main Stylesheet
+
+The main `index.css` imports Tailwind CSS v4 and all theme/component styles:
+
+```css
+@import "tailwindcss";
+
+@import "./theme/index.css";
+@import "./components/index.css";
+```
+
+**Source:** `packages/styles/src/index.css`
+
+## Utilities
+
+The package exports utility functions from `packages/styles/src/utils/index.ts`:
+
+### cn
+
+See [cn utility documentation](/api/utilities/cn) for detailed usage.
+
+```typescript
+import { cn } from '@shizen-ui/styles';
+```
+
+## Variants
+
+Component variant definitions are exported from `packages/styles/src/variants/index.ts`:
+
+### Available Variants
+
+<ResponseField name="buttonStyles" type="tv()">
+  Button component variants with primary, secondary, tertiary, danger, ghost, outline, and soft-danger styles
+  
+  **Source:** `packages/styles/src/variants/button/button.styles.ts`
+</ResponseField>
+
+<ResponseField name="buttonGroupStyles" type="tv()">
+  Button group component variants
+  
+  **Source:** `packages/styles/src/variants/button-group/`
+</ResponseField>
+
+<ResponseField name="checkboxStyles" type="tv()">
+  Checkbox component variants
+  
+  **Source:** `packages/styles/src/variants/checkbox/`
+</ResponseField>
+
+<ResponseField name="checkboxGroupStyles" type="tv()">
+  Checkbox group component variants
+  
+  **Source:** `packages/styles/src/variants/checkbox-group/`
+</ResponseField>
+
+<ResponseField name="inputStyles" type="tv()">
+  Input component variants with size options (sm, md, lg)
+  
+  **Source:** `packages/styles/src/variants/input/input.styles.ts`
+</ResponseField>
+
+<ResponseField name="inputGroupStyles" type="tv()">
+  Input group component variants
+  
+  **Source:** `packages/styles/src/variants/input-group/`
+</ResponseField>
+
+<ResponseField name="radioStyles" type="tv()">
+  Radio component variants
+  
+  **Source:** `packages/styles/src/variants/radio/`
+</ResponseField>
+
+<ResponseField name="radioGroupStyles" type="tv()">
+  Radio group component variants
+  
+  **Source:** `packages/styles/src/variants/radio-group/`
+</ResponseField>
+
+<ResponseField name="textAreaStyles" type="tv()">
+  Text area component variants
+  
+  **Source:** `packages/styles/src/variants/text-area/`
+</ResponseField>
+
+<ResponseField name="textFieldStyles" type="tv()">
+  Text field component variants
+  
+  **Source:** `packages/styles/src/variants/text-field/`
+</ResponseField>
+
+<ResponseField name="labelStyles" type="tv()">
+  Label component variants
+  
+  **Source:** `packages/styles/src/variants/label/`
+</ResponseField>
+
+<ResponseField name="descriptionStyles" type="tv()">
+  Description component variants
+  
+  **Source:** `packages/styles/src/variants/description/`
+</ResponseField>
+
+<ResponseField name="fieldErrorStyles" type="tv()">
+  Field error component variants
+  
+  **Source:** `packages/styles/src/variants/field-error/`
+</ResponseField>
+
+See [variants utility documentation](/api/utilities/variants) for detailed usage and examples.
+
+## Component CSS Files
+
+Each component has a corresponding CSS file in `packages/styles/src/components/`:
+
+- `button.css`
+- `button-group.css`
+- `checkbox.css`
+- `checkbox-group.css`
+- `description.css`
+- `field-error.css`
+- `input.css`
+- `input-group.css`
+- `label.css`
+- `radio.css`
+- `radio-group.css`
+- `text-area.css`
+- `text-field.css`
+
+## Theme Files
+
+Theme configuration is organized in `packages/styles/src/theme/`:
+
+<ResponseField name="variables.css" type="file">
+  CSS custom properties and design tokens
+</ResponseField>
+
+<ResponseField name="utilities.css" type="file">
+  Custom Tailwind utilities
+</ResponseField>
+
+<ResponseField name="theme.css" type="file">
+  Main theme configuration
+</ResponseField>
+
+<ResponseField name="index.css" type="file">
+  Aggregates all theme files
+</ResponseField>
+
+## Using Styles Independently
+
+You can use the styles package without the Svelte components:
+
+```typescript
+import { cn, buttonStyles } from '@shizen-ui/styles';
+import '@shizen-ui/styles/styles';
+
+const className = cn(
+  buttonStyles({ variant: 'primary', size: 'md' }),
+  'custom-class'
+);
+```
+
+This is useful for:
+- Building components in other frameworks (React, Vue, etc.)
+- Creating custom components with Shizen UI styling
+- Using only the utility functions
+
+## TypeScript Support
+
+All utilities and variants include full TypeScript definitions:
+
+```typescript
+import type { ButtonVariants } from '@shizen-ui/styles';
+import type { ClassValue } from 'clsx';
+import type { VariantProps } from 'tailwind-variants';
+
+// ButtonVariants is inferred from buttonStyles
+type ButtonProps = {
+  variant?: ButtonVariants['variant'];
+  size?: ButtonVariants['size'];
+};
+```
+
+## Usage Example
+
+```typescript
+import { cn, buttonStyles, inputStyles } from '@shizen-ui/styles';
+import '@shizen-ui/styles/styles';
+
+// Button with variants
+const button = document.createElement('button');
+button.className = buttonStyles({
+  variant: 'primary',
+  size: 'lg'
+});
+
+// Input with custom classes
+const input = document.createElement('input');
+input.className = cn(
+  inputStyles({ size: 'md' }),
+  'w-full',
+  'max-w-xs'
+);
+
+// Conditional classes
+const conditionalButton = buttonStyles({
+  variant: isActive ? 'primary' : 'secondary',
+  size: 'md'
+});
+```

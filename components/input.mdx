@@ -1,0 +1,300 @@
+---
+title: Input
+description: A form input component for single-line text entry with validation support and context integration.
+---
+
+## Overview
+
+The Input component is a foundational form control for single-line text input. It supports multiple sizes, integrates seamlessly with TextField for automatic validation state management, and can be used standalone or within an InputGroup for enhanced functionality with prefixes and suffixes.
+
+## Installation
+
+```bash
+npm install @shizen-ui/svelte
+```
+
+## Import
+
+```typescript
+import { Input } from '@shizen-ui/svelte';
+```
+
+## Basic Usage
+
+<CodeGroup>
+```svelte Default Input
+<script>
+  import { Input } from '@shizen-ui/svelte';
+  
+  let value = $state('');
+</script>
+
+<Input bind:value placeholder="Enter text" />
+```
+
+```svelte Different Types
+<script>
+  import { Input } from '@shizen-ui/svelte';
+  
+  let email = $state('');
+  let password = $state('');
+</script>
+
+<Input type="email" bind:value={email} placeholder="Email" />
+<Input type="password" bind:value={password} placeholder="Password" />
+```
+</CodeGroup>
+
+## Props
+
+<ParamField path="value" type="string" default="">
+  The current value of the input. Use `bind:value` for two-way binding.
+</ParamField>
+
+<ParamField path="size" type="string" default="md">
+  The size of the input.
+  
+  Options: `"sm"` | `"md"` | `"lg"`
+</ParamField>
+
+<ParamField path="type" type="string" default="text">
+  The HTML input type attribute.
+  
+  Common options: `"text"` | `"email"` | `"password"` | `"number"` | `"tel"` | `"url"` | `"search"`
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default={false}>
+  When true, disables the input.
+</ParamField>
+
+<ParamField path="invalid" type="boolean" default={false}>
+  When true, applies invalid/error styling. Automatically managed when used within a TextField.
+</ParamField>
+
+<ParamField path="placeholder" type="string">
+  Placeholder text displayed when the input is empty.
+</ParamField>
+
+<ParamField path="id" type="string">
+  The HTML id attribute. Automatically managed when used within a TextField.
+</ParamField>
+
+<ParamField path="class" type="string">
+  Additional CSS classes to apply to the input.
+</ParamField>
+
+<Note>
+  All standard HTML input attributes (like `name`, `required`, `pattern`, `minlength`, `maxlength`, `autocomplete`, etc.) are supported through rest props.
+</Note>
+
+## Sizes
+
+<CodeGroup>
+```svelte Small
+<Input size="sm" placeholder="Small input" />
+```
+
+```svelte Medium
+<Input size="md" placeholder="Medium input" />
+```
+
+```svelte Large
+<Input size="lg" placeholder="Large input" />
+```
+</CodeGroup>
+
+## Advanced Examples
+
+### With TextField (Recommended)
+
+Use within a TextField for automatic label, description, and error handling:
+
+```svelte
+<script>
+  import { Input, TextField, Label, Description, FieldError } from '@shizen-ui/svelte';
+  
+  let email = $state('');
+  let invalid = $state(false);
+  
+  function validateEmail() {
+    invalid = !email.includes('@');
+  }
+</script>
+
+<TextField {invalid}>
+  <Label>Email Address</Label>
+  <Input 
+    type="email" 
+    bind:value={email} 
+    onblur={validateEmail}
+    placeholder="you@example.com" 
+  />
+  <Description>We'll never share your email with anyone else.</Description>
+  {#if invalid}
+    <FieldError>Please enter a valid email address.</FieldError>
+  {/if}
+</TextField>
+```
+
+### Disabled State
+
+```svelte
+<Input disabled value="Cannot edit this" />
+```
+
+### Invalid State
+
+```svelte
+<Input invalid value="invalid@email" placeholder="Email" />
+```
+
+### Different Input Types
+
+<CodeGroup>
+```svelte Email
+<Input type="email" placeholder="email@example.com" />
+```
+
+```svelte Password
+<Input type="password" placeholder="Enter password" />
+```
+
+```svelte Number
+<Input type="number" placeholder="Enter amount" />
+```
+
+```svelte Search
+<Input type="search" placeholder="Search..." />
+```
+</CodeGroup>
+
+### With HTML5 Validation
+
+```svelte
+<form>
+  <Input 
+    type="email" 
+    required 
+    placeholder="Email" 
+  />
+  <Input 
+    type="password" 
+    required 
+    minlength={8}
+    placeholder="Password (min 8 characters)" 
+  />
+  <button type="submit">Submit</button>
+</form>
+```
+
+### With InputGroup
+
+Combine with InputGroup for prefixes and suffixes:
+
+```svelte
+<script>
+  import { Input, InputGroup } from '@shizen-ui/svelte';
+</script>
+
+<InputGroup>
+  {#snippet prefix()}
+    <span>$</span>
+  {/snippet}
+  <Input type="number" placeholder="0.00" />
+  {#snippet suffix()}
+    <span>USD</span>
+  {/snippet}
+</InputGroup>
+```
+
+### Controlled Component
+
+```svelte
+<script>
+  import { Input } from '@shizen-ui/svelte';
+  
+  let value = $state('');
+  let charCount = $derived(value.length);
+</script>
+
+<div>
+  <Input bind:value maxlength={100} placeholder="Enter text" />
+  <p>Characters: {charCount}/100</p>
+</div>
+```
+
+### With Custom Validation
+
+```svelte
+<script>
+  import { Input } from '@shizen-ui/svelte';
+  
+  let username = $state('');
+  let error = $state('');
+  
+  function validateUsername() {
+    if (username.length < 3) {
+      error = 'Username must be at least 3 characters';
+    } else if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+      error = 'Username can only contain letters, numbers, and underscores';
+    } else {
+      error = '';
+    }
+  }
+</script>
+
+<Input 
+  bind:value={username}
+  onblur={validateUsername}
+  oninput={validateUsername}
+  invalid={!!error}
+  placeholder="Username"
+/>
+{#if error}
+  <p class="text-red-500 text-sm mt-1">{error}</p>
+{/if}
+```
+
+## Context Integration
+
+### TextField Context
+
+When used within a TextField, the Input automatically receives:
+
+- `id` - Generated field ID for label association
+- `invalid` - Validation state from the TextField
+- `disabled` - Disabled state from the TextField
+- `aria-describedby` - Links to Description component
+- `aria-errormessage` - Links to FieldError component
+
+### InputGroup Context
+
+When used within an InputGroup, the Input automatically receives:
+
+- `size` - Size inherited from the InputGroup
+- `disabled` - Disabled state from the InputGroup
+- `data-in-group` - Attribute for styling adjustments
+
+## Accessibility
+
+- Uses semantic `<input>` element
+- Supports all standard ARIA attributes
+- `aria-invalid` automatically set based on `invalid` prop
+- When used with TextField, automatically linked to labels, descriptions, and error messages
+- Supports keyboard navigation (Tab to focus, standard text editing keys)
+- Always provide a label (using Label component or `aria-label` attribute):
+
+```svelte
+<Input aria-label="Search" type="search" placeholder="Search..." />
+```
+
+<Tip>
+  Always use the Input component within a TextField wrapper for the best accessibility and user experience. The TextField handles all the complex ARIA relationships and validation states automatically.
+</Tip>
+
+## Styling Notes
+
+- The Input uses the `data-invalid` attribute for styling error states
+- When in an InputGroup, uses `data-in-group` for border adjustments
+- Inherits size from InputGroup context when present
+- Fully customizable with the `class` prop

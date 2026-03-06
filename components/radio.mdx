@@ -1,0 +1,466 @@
+---
+title: Radio
+description: A compound radio button component with customizable controls and indicators for single selection within a group.
+---
+
+## Overview
+
+The Radio component is a selection control that allows users to choose a single option from a set. Built with a compound component pattern, it provides fine-grained control over rendering with separate Control, Indicator, and Content sub-components. Radio buttons are typically used within a RadioGroup for coordinated single-selection behavior.
+
+## Installation
+
+```bash
+npm install @shizen-ui/svelte
+```
+
+## Import
+
+<CodeGroup>
+```typescript Root Import
+import { Radio } from '@shizen-ui/svelte';
+```
+
+```typescript Compound Components
+import { Radio } from '@shizen-ui/svelte';
+
+const { Control, Indicator, Content } = Radio;
+```
+</CodeGroup>
+
+## Basic Usage
+
+<CodeGroup>
+```svelte Simple Radio
+<script>
+  import { Radio } from '@shizen-ui/svelte';
+  
+  let checked = $state(false);
+</script>
+
+<Radio value="option1" bind:checked>
+  <Radio.Control />
+  <Radio.Content>
+    Select this option
+  </Radio.Content>
+</Radio>
+```
+
+```svelte With Custom Indicator
+<script>
+  import { Radio } from '@shizen-ui/svelte';
+  
+  let checked = $state(false);
+</script>
+
+<Radio value="option1" bind:checked>
+  <Radio.Control>
+    <Radio.Indicator />
+  </Radio.Control>
+  <Radio.Content>
+    Custom styled option
+  </Radio.Content>
+</Radio>
+```
+</CodeGroup>
+
+## Compound Component Structure
+
+The Radio uses a compound component pattern with three main parts:
+
+- **Radio** (Root) - The main container that manages state and context
+- **Radio.Control** - The visual radio button circle container
+- **Radio.Indicator** - The dot indicator that appears when selected
+- **Radio.Content** - The label content next to the radio button
+
+```svelte
+<Radio value="option">
+  <Radio.Control>
+    <Radio.Indicator />
+  </Radio.Control>
+  <Radio.Content>
+    Label text
+  </Radio.Content>
+</Radio>
+```
+
+<Note>
+  If no children are provided to `Radio.Control`, it will automatically render a `Radio.Indicator` as the default content.
+</Note>
+
+## Props
+
+### Radio (Root)
+
+<ParamField path="value" type="string" required>
+  The value associated with this radio button. This is required and identifies the option within a RadioGroup.
+</ParamField>
+
+<ParamField path="checked" type="boolean" default={false}>
+  The checked state of the radio button. Use `bind:checked` for two-way binding.
+  
+  When inside a RadioGroup, this is automatically managed by the group.
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default={false}>
+  When true, disables the radio button interaction. Inherited from RadioGroup or Field context if present.
+</ParamField>
+
+<ParamField path="invalid" type="boolean" default={false}>
+  When true, applies invalid/error styling. Inherited from RadioGroup or Field context if present.
+</ParamField>
+
+<ParamField path="name" type="string">
+  The name attribute for the underlying input element. Automatically set by RadioGroup if present.
+</ParamField>
+
+<ParamField path="id" type="string">
+  The ID for the radio input. Auto-generated if not provided.
+</ParamField>
+
+<ParamField path="class" type="string">
+  Additional CSS classes to apply to the root container.
+</ParamField>
+
+### Radio.Control
+
+<ParamField path="class" type="string">
+  Additional CSS classes to apply to the control circle.
+</ParamField>
+
+<ParamField path="children" type="Snippet">
+  Custom content for the control. If not provided, defaults to `<Radio.Indicator />`.
+</ParamField>
+
+### Radio.Indicator
+
+<ParamField path="class" type="string">
+  Additional CSS classes to apply to the indicator dot.
+</ParamField>
+
+<ParamField path="children" type="Snippet">
+  Custom indicator content. If not provided, shows a default circular dot.
+</ParamField>
+
+### Radio.Content
+
+<ParamField path="class" type="string">
+  Additional CSS classes to apply to the content wrapper.
+</ParamField>
+
+<ParamField path="children" type="Snippet" required>
+  The label content to display.
+</ParamField>
+
+## Checked State Management
+
+### Standalone Radio
+
+```svelte
+<script>
+  import { Radio } from '@shizen-ui/svelte';
+  
+  let selected = $state(false);
+</script>
+
+<Radio value="accept" bind:checked={selected}>
+  <Radio.Control />
+  <Radio.Content>
+    I accept the terms
+  </Radio.Content>
+</Radio>
+
+<p>Selected: {selected}</p>
+```
+
+### Manual Radio Group (Not Recommended)
+
+```svelte
+<script>
+  import { Radio } from '@shizen-ui/svelte';
+  
+  let selected = $state('option1');
+</script>
+
+<Radio value="option1" checked={selected === 'option1'} onclick={() => selected = 'option1'}>
+  <Radio.Control />
+  <Radio.Content>Option 1</Radio.Content>
+</Radio>
+
+<Radio value="option2" checked={selected === 'option2'} onclick={() => selected = 'option2'}>
+  <Radio.Control />
+  <Radio.Content>Option 2</Radio.Content>
+</Radio>
+
+<p>Selected: {selected}</p>
+```
+
+<Note>
+  For multiple radio buttons that form a group, use the RadioGroup component instead of managing the state manually. RadioGroup handles selection coordination automatically.
+</Note>
+
+## Styling and Variants
+
+### Custom Styles
+
+```svelte
+<Radio value="custom" class="p-4 rounded-lg hover:bg-gray-50">
+  <Radio.Control class="border-2 border-purple-500" />
+  <Radio.Content class="text-lg font-medium">
+    Custom styled radio
+  </Radio.Content>
+</Radio>
+```
+
+### Custom Indicator
+
+```svelte
+<script>
+  import { Radio } from '@shizen-ui/svelte';
+  
+  let checked = $state(false);
+</script>
+
+<Radio value="custom" bind:checked>
+  <Radio.Control>
+    <Radio.Indicator>
+      <i class="i-lucide-circle-dot text-blue-500"></i>
+    </Radio.Indicator>
+  </Radio.Control>
+  <Radio.Content>
+    Custom indicator icon
+  </Radio.Content>
+</Radio>
+```
+
+### State-Based Styling
+
+```svelte
+<Radio value="disabled" disabled>
+  <Radio.Control />
+  <Radio.Content>
+    Disabled radio
+  </Radio.Content>
+</Radio>
+
+<Radio value="invalid" invalid>
+  <Radio.Control />
+  <Radio.Content>
+    Invalid radio
+  </Radio.Content>
+</Radio>
+```
+
+## Advanced Examples
+
+### With Rich Content
+
+```svelte
+<script>
+  import { Radio } from '@shizen-ui/svelte';
+  
+  let plan = $state('basic');
+</script>
+
+<Radio value="basic" checked={plan === 'basic'} onclick={() => plan = 'basic'}>
+  <Radio.Control />
+  <Radio.Content>
+    <div>
+      <div class="font-semibold">Basic Plan</div>
+      <div class="text-sm text-gray-500">$10/month</div>
+      <div class="text-xs text-gray-400">Perfect for individuals</div>
+    </div>
+  </Radio.Content>
+</Radio>
+
+<Radio value="pro" checked={plan === 'pro'} onclick={() => plan = 'pro'}>
+  <Radio.Control />
+  <Radio.Content>
+    <div>
+      <div class="font-semibold">Pro Plan</div>
+      <div class="text-sm text-gray-500">$25/month</div>
+      <div class="text-xs text-gray-400">Best for teams</div>
+    </div>
+  </Radio.Content>
+</Radio>
+```
+
+### Card-Style Radio Buttons
+
+```svelte
+<script>
+  import { Radio } from '@shizen-ui/svelte';
+  
+  let selected = $state('card1');
+</script>
+
+<div class="grid grid-cols-3 gap-4">
+  <Radio 
+    value="card1" 
+    checked={selected === 'card1'}
+    onclick={() => selected = 'card1'}
+    class="border-2 rounded-lg p-4 {selected === 'card1' ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}"
+  >
+    <Radio.Control />
+    <Radio.Content>
+      <div>
+        <div class="font-medium">Card 1</div>
+        <div class="text-sm text-gray-500">Description</div>
+      </div>
+    </Radio.Content>
+  </Radio>
+  
+  <Radio 
+    value="card2" 
+    checked={selected === 'card2'}
+    onclick={() => selected = 'card2'}
+    class="border-2 rounded-lg p-4 {selected === 'card2' ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}"
+  >
+    <Radio.Control />
+    <Radio.Content>
+      <div>
+        <div class="font-medium">Card 2</div>
+        <div class="text-sm text-gray-500">Description</div>
+      </div>
+    </Radio.Content>
+  </Radio>
+  
+  <Radio 
+    value="card3" 
+    checked={selected === 'card3'}
+    onclick={() => selected = 'card3'}
+    class="border-2 rounded-lg p-4 {selected === 'card3' ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}"
+  >
+    <Radio.Control />
+    <Radio.Content>
+      <div>
+        <div class="font-medium">Card 3</div>
+        <div class="text-sm text-gray-500">Description</div>
+      </div>
+    </Radio.Content>
+  </Radio>
+</div>
+```
+
+### With Icons
+
+```svelte
+<script>
+  import { Radio } from '@shizen-ui/svelte';
+  
+  let method = $state('email');
+</script>
+
+<Radio value="email" checked={method === 'email'} onclick={() => method = 'email'}>
+  <Radio.Control />
+  <Radio.Content>
+    <div class="flex items-center gap-2">
+      <i class="i-lucide-mail"></i>
+      <span>Email</span>
+    </div>
+  </Radio.Content>
+</Radio>
+
+<Radio value="sms" checked={method === 'sms'} onclick={() => method = 'sms'}>
+  <Radio.Control />
+  <Radio.Content>
+    <div class="flex items-center gap-2">
+      <i class="i-lucide-smartphone"></i>
+      <span>SMS</span>
+    </div>
+  </Radio.Content>
+</Radio>
+
+<Radio value="push" checked={method === 'push'} onclick={() => method = 'push'}>
+  <Radio.Control />
+  <Radio.Content>
+    <div class="flex items-center gap-2">
+      <i class="i-lucide-bell"></i>
+      <span>Push Notification</span>
+    </div>
+  </Radio.Content>
+</Radio>
+```
+
+## Accessibility
+
+- Uses a native `<input type="radio">` element for proper semantics
+- Supports keyboard navigation:
+  - **Space** or **Enter** to select
+  - **Tab** to focus the checked radio or first radio in group
+  - **Arrow keys** for navigation within a RadioGroup
+- Properly handles `aria-checked` attribute
+- Keyboard focus management:
+  - Checked radio has `tabindex="0"`
+  - Unchecked radios in a group have `tabindex="-1"` 
+  - Standalone radio has `tabindex="0"`
+- Disabled radios have `tabindex="-1"` to remove from keyboard navigation
+- The entire radio container is clickable, improving usability
+- Data attributes (`data-checked`, `data-disabled`, `data-invalid`) are applied for styling
+
+```svelte
+<Radio value="option" aria-label="Choose this option">
+  <Radio.Control />
+  <Radio.Content>
+    Option label
+  </Radio.Content>
+</Radio>
+```
+
+## Usage with RadioGroup
+
+When a Radio is placed inside a RadioGroup, it automatically coordinates with the group:
+
+```svelte
+<script>
+  import { Radio, RadioGroup } from '@shizen-ui/svelte';
+  
+  let selected = $state('option1');
+</script>
+
+<RadioGroup bind:value={selected}>
+  <Radio value="option1">
+    <Radio.Control />
+    <Radio.Content>Option 1</Radio.Content>
+  </Radio>
+  
+  <Radio value="option2">
+    <Radio.Control />
+    <Radio.Content>Option 2</Radio.Content>
+  </Radio>
+  
+  <Radio value="option3">
+    <Radio.Control />
+    <Radio.Content>Option 3</Radio.Content>
+  </Radio>
+</RadioGroup>
+
+<p>Selected: {selected}</p>
+```
+
+<Tip>
+  The Radio component automatically detects when it's inside a RadioGroup and coordinates its checked state with the group's value, eliminating the need for manual state management on each radio button.
+</Tip>
+
+## Context Propagation
+
+The Radio root component provides context to its sub-components:
+
+- `checked` - Whether this radio is selected
+- `disabled` - Whether the radio is disabled
+- `invalid` - Whether the radio has validation errors
+- `id` - The radio input ID
+
+Sub-components automatically receive this context and don't need props passed explicitly.
+
+## Data Attributes
+
+The following data attributes are applied for styling:
+
+- `data-checked` - Applied when the radio is selected
+- `data-disabled` - Applied when disabled
+- `data-invalid` - Applied when invalid
+- `data-custom` - Applied to Indicator when using custom content
+
+<Note>
+  Radio buttons should always be used in groups (using RadioGroup) to provide users with a clear set of mutually exclusive options. Standalone radio buttons can be confusing as they cannot be unchecked once selected.
+</Note>

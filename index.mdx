@@ -1,97 +1,115 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+title: "Shizen UI"
+description: "Minimalist, fast, and animated Svelte 5 UI library focused on micro-interactions"
 ---
 
-## Setting up
+<div className="bg-[#0a0a0a] text-[#e6e6e6] py-16 px-6 rounded-lg border border-[#f48fb1] mb-8">
+  <div className="max-w-4xl mx-auto text-center">
+    <h1 className="text-5xl font-bold text-[#e6e6e6] mb-6">
+      Shizen UI
+    </h1>
+    <p className="text-xl text-[#e6e6e6] mb-8 max-w-2xl mx-auto">
+      Minimalist, fast, and animated Svelte 5 UI library focused on micro-interactions
+    </p>
+    <div className="flex gap-4 justify-center flex-wrap">
+      <a href="/quickstart" className="inline-block bg-[#f687b3] text-[#1a202c] px-6 py-3 rounded-md font-semibold hover:opacity-90 transition-opacity">
+        Get Started
+      </a>
+      <a href="https://github.com/jaftdelgado/shizen-ui" className="inline-block bg-[#2d3748] text-[#a0aec0] px-6 py-3 rounded-md font-semibold hover:opacity-90 transition-opacity">
+        View on GitHub
+      </a>
+    </div>
+  </div>
+</div>
 
-Get your documentation site up and running in minutes.
+## Key Features
 
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
+Shizen UI brings modern design patterns and developer experience to Svelte 5 applications.
 
-## Make it yours
-
-Design a docs site that looks great and empowers your users.
-
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
+<CardGroup cols={2}>
+  <Card title="Svelte 5 Native" icon="bolt">
+    Built from the ground up using Svelte 5 runes and snippets API for optimal performance and developer experience
   </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
+  <Card title="Tailwind CSS v4" icon="paintbrush">
+    Seamlessly integrated with Tailwind CSS v4 for modern styling and customization
   </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
+  <Card title="Compound Components" icon="layer-group">
+    Flexible compound component patterns that give you full control over composition and structure
   </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
+  <Card title="Micro-interactions" icon="wand-magic-sparkles">
+    Delightful animations and micro-interactions that enhance user experience without sacrificing performance
   </Card>
-</Columns>
+  <Card title="Accessible by Default" icon="universal-access">
+    ARIA-compliant form controls with keyboard navigation and screen reader support built in
+  </Card>
+  <Card title="TypeScript First" icon="code">
+    Fully typed components with excellent IDE support and autocomplete
+  </Card>
+  <Card title="Customizable Variants" icon="sliders">
+    Powerful variant system using tailwind-variants for consistent, customizable component styling
+  </Card>
+  <Card title="Minimal Bundle" icon="feather">
+    Optimized for small bundle sizes with tree-shaking support and zero unnecessary dependencies
+  </Card>
+</CardGroup>
 
-## Create beautiful pages
+## Quick Start
 
-Everything you need to create world-class documentation.
+Get up and running with Shizen UI in minutes.
 
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
+<CardGroup cols={2}>
+  <Card title="Installation" icon="download" href="/installation">
+    Install Shizen UI and configure your Svelte 5 project
   </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Build your first component and understand the basics
   </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
+  <Card title="Components" icon="cube" href="/components/button">
+    Explore the complete component library
   </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
+  <Card title="Customization" icon="palette" href="/guides/customization">
+    Learn how to customize and theme your components
   </Card>
-</Columns>
+</CardGroup>
 
-## Need inspiration?
+## Components
 
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+Shizen UI provides a comprehensive set of form controls and helpers.
+
+<CardGroup cols={3}>
+  <Card title="Button" icon="hand-pointer" href="/components/button">
+    Interactive button component with variants
+  </Card>
+  <Card title="Input" icon="keyboard" href="/components/input">
+    Text input with validation support
+  </Card>
+  <Card title="Checkbox" icon="square-check" href="/components/checkbox">
+    Accessible checkbox with compound API
+  </Card>
+  <Card title="Radio" icon="circle-dot" href="/components/radio">
+    Radio button for single selections
+  </Card>
+  <Card title="Text Area" icon="align-left" href="/components/text-area">
+    Multi-line text input component
+  </Card>
+  <Card title="Text Field" icon="input-text" href="/components/text-field">
+    Complete form field with label and error
+  </Card>
+</CardGroup>
+
+## Learn More
+
+<CardGroup cols={2}>
+  <Card title="Styling Guide" icon="brush" href="/concepts/styling">
+    Understand how Shizen UI integrates with Tailwind CSS
+  </Card>
+  <Card title="Theming" icon="palette" href="/concepts/theming">
+    Create custom themes and design systems
+  </Card>
+  <Card title="Variants" icon="layer-group" href="/concepts/variants">
+    Master the variant system for component customization
+  </Card>
+  <Card title="Accessibility" icon="universal-access" href="/guides/accessibility">
+    Learn about accessibility features and best practices
+  </Card>
+</CardGroup>

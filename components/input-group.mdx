@@ -1,0 +1,369 @@
+---
+title: Input Group
+description: A container component for composing inputs with prefix and suffix addons for enhanced form controls.
+---
+
+## Overview
+
+The InputGroup component provides a flexible container for creating enhanced input controls with prefix and suffix addons. It's perfect for adding icons, labels, buttons, or text to the beginning or end of an input field, creating rich form controls like search boxes, currency inputs, or URL fields.
+
+## Installation
+
+```bash
+npm install @shizen-ui/svelte
+```
+
+## Import
+
+```typescript
+import { InputGroup } from '@shizen-ui/svelte';
+```
+
+## Basic Usage
+
+<CodeGroup>
+```svelte With Prefix
+<script>
+  import { Input, InputGroup } from '@shizen-ui/svelte';
+</script>
+
+<InputGroup>
+  {#snippet prefix()}
+    <span>@</span>
+  {/snippet}
+  <Input placeholder="username" />
+</InputGroup>
+```
+
+```svelte With Suffix
+<script>
+  import { Input, InputGroup } from '@shizen-ui/svelte';
+</script>
+
+<InputGroup>
+  <Input placeholder="example" />
+  {#snippet suffix()}
+    <span>.com</span>
+  {/snippet}
+</InputGroup>
+```
+
+```svelte With Both
+<script>
+  import { Input, InputGroup } from '@shizen-ui/svelte';
+</script>
+
+<InputGroup>
+  {#snippet prefix()}
+    <span>$</span>
+  {/snippet}
+  <Input type="number" placeholder="0.00" />
+  {#snippet suffix()}
+    <span>USD</span>
+  {/snippet}
+</InputGroup>
+```
+</CodeGroup>
+
+## Props
+
+<ParamField path="size" type="string" default="md">
+  The size applied to the input group and all child inputs.
+  
+  Options: `"sm"` | `"md"` | `"lg"`
+</ParamField>
+
+<ParamField path="fullWidth" type="boolean" default={false}>
+  When true, the input group takes up the full width of its container. When false, max width is limited to `max-w-xs`.
+</ParamField>
+
+<ParamField path="hasTextArea" type="boolean" default={false}>
+  Set to true when the group contains a TextArea instead of an Input for proper styling.
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default={false}>
+  When true, disables all inputs within the group.
+</ParamField>
+
+<ParamField path="class" type="string">
+  Additional CSS classes to apply to the input group container.
+</ParamField>
+
+## Snippets
+
+<ParamField path="prefix" type="Snippet">
+  Content to display before the input (left side in LTR layouts).
+</ParamField>
+
+<ParamField path="suffix" type="Snippet">
+  Content to display after the input (right side in LTR layouts).
+</ParamField>
+
+<ParamField path="children" type="Snippet" required>
+  The input or textarea element to wrap.
+</ParamField>
+
+## Sizes
+
+<CodeGroup>
+```svelte Small
+<InputGroup size="sm">
+  {#snippet prefix()}
+    <i class="i-lucide-search"></i>
+  {/snippet}
+  <Input placeholder="Search" />
+</InputGroup>
+```
+
+```svelte Medium
+<InputGroup size="md">
+  {#snippet prefix()}
+    <i class="i-lucide-search"></i>
+  {/snippet}
+  <Input placeholder="Search" />
+</InputGroup>
+```
+
+```svelte Large
+<InputGroup size="lg">
+  {#snippet prefix()}
+    <i class="i-lucide-search"></i>
+  {/snippet}
+  <Input placeholder="Search" />
+</InputGroup>
+```
+</CodeGroup>
+
+## Advanced Examples
+
+### Search Input with Icon
+
+```svelte
+<script>
+  import { Input, InputGroup } from '@shizen-ui/svelte';
+  
+  let query = $state('');
+</script>
+
+<InputGroup>
+  {#snippet prefix()}
+    <i class="i-lucide-search text-gray-500"></i>
+  {/snippet}
+  <Input 
+    type="search" 
+    bind:value={query} 
+    placeholder="Search..." 
+  />
+</InputGroup>
+```
+
+### Currency Input
+
+```svelte
+<script>
+  import { Input, InputGroup } from '@shizen-ui/svelte';
+  
+  let amount = $state('');
+</script>
+
+<InputGroup>
+  {#snippet prefix()}
+    <span class="text-gray-700 font-medium">$</span>
+  {/snippet}
+  <Input 
+    type="number" 
+    bind:value={amount} 
+    placeholder="0.00" 
+  />
+  {#snippet suffix()}
+    <span class="text-gray-500">USD</span>
+  {/snippet}
+</InputGroup>
+```
+
+### URL Input
+
+```svelte
+<script>
+  import { Input, InputGroup } from '@shizen-ui/svelte';
+  
+  let domain = $state('');
+</script>
+
+<InputGroup fullWidth>
+  {#snippet prefix()}
+    <span class="text-gray-500">https://</span>
+  {/snippet}
+  <Input bind:value={domain} placeholder="www.example.com" />
+</InputGroup>
+```
+
+### With Button Suffix
+
+```svelte
+<script>
+  import { Input, InputGroup, Button } from '@shizen-ui/svelte';
+  
+  let email = $state('');
+  
+  function subscribe() {
+    console.log('Subscribe:', email);
+  }
+</script>
+
+<InputGroup fullWidth>
+  <Input 
+    type="email" 
+    bind:value={email} 
+    placeholder="Enter your email" 
+  />
+  {#snippet suffix()}
+    <Button onclick={subscribe} size="sm">Subscribe</Button>
+  {/snippet}
+</InputGroup>
+```
+
+### With TextArea
+
+```svelte
+<script>
+  import { TextArea, InputGroup } from '@shizen-ui/svelte';
+  
+  let message = $state('');
+</script>
+
+<InputGroup hasTextArea fullWidth>
+  {#snippet prefix()}
+    <i class="i-lucide-message-square"></i>
+  {/snippet}
+  <TextArea bind:value={message} placeholder="Enter your message" />
+  {#snippet suffix()}
+    <span class="text-sm text-gray-500">{message.length}/500</span>
+  {/snippet}
+</InputGroup>
+```
+
+<Note>
+  When using a TextArea inside an InputGroup, always set the `hasTextArea` prop to true for proper styling alignment.
+</Note>
+
+### Disabled Group
+
+```svelte
+<InputGroup disabled>
+  {#snippet prefix()}
+    <i class="i-lucide-lock"></i>
+  {/snippet}
+  <Input value="Locked content" />
+</InputGroup>
+```
+
+### With TextField Integration
+
+```svelte
+<script>
+  import { Input, InputGroup, TextField, Label, FieldError } from '@shizen-ui/svelte';
+  
+  let username = $state('');
+  let invalid = $state(false);
+  
+  function validate() {
+    invalid = username.length < 3;
+  }
+</script>
+
+<TextField {invalid}>
+  <Label>Username</Label>
+  <InputGroup>
+    {#snippet prefix()}
+      <span>@</span>
+    {/snippet}
+    <Input 
+      bind:value={username} 
+      onblur={validate}
+      placeholder="username" 
+    />
+  </InputGroup>
+  {#if invalid}
+    <FieldError>Username must be at least 3 characters</FieldError>
+  {/if}
+</TextField>
+```
+
+### Multiple Addons
+
+```svelte
+<InputGroup>
+  {#snippet prefix()}
+    <i class="i-lucide-mail mr-2"></i>
+    <span class="text-gray-500">To:</span>
+  {/snippet}
+  <Input type="email" placeholder="recipient@example.com" />
+  {#snippet suffix()}
+    <button class="text-blue-500 hover:text-blue-600">
+      <i class="i-lucide-plus-circle"></i>
+    </button>
+  {/snippet}
+</InputGroup>
+```
+
+### Credit Card Input
+
+```svelte
+<script>
+  import { Input, InputGroup } from '@shizen-ui/svelte';
+  
+  let cardNumber = $state('');
+</script>
+
+<InputGroup>
+  {#snippet prefix()}
+    <i class="i-lucide-credit-card"></i>
+  {/snippet}
+  <Input 
+    bind:value={cardNumber} 
+    placeholder="1234 5678 9012 3456"
+    maxlength={19}
+  />
+</InputGroup>
+```
+
+## Context Propagation
+
+The InputGroup uses Svelte context to automatically propagate the following props to all child Input and TextArea components:
+
+- `size` - The input size
+- `disabled` - The disabled state
+- `inGroup` - Flag indicating the input is inside a group (for styling)
+
+Child inputs automatically receive these props but can override them if needed.
+
+## Accessibility
+
+- The InputGroup is a presentational wrapper and doesn't add semantic meaning
+- All accessibility features come from the child Input/TextArea components
+- Ensure prefix/suffix content is properly labeled if it conveys important information:
+
+```svelte
+<InputGroup>
+  {#snippet prefix()}
+    <i class="i-lucide-search" aria-label="Search"></i>
+  {/snippet}
+  <Input placeholder="Search..." />
+</InputGroup>
+```
+
+- When using interactive elements in prefix/suffix (like buttons), ensure they're keyboard accessible
+- The `data-disabled` attribute is applied to the container for styling when disabled
+
+<Tip>
+  Use InputGroup to create rich, professional form controls. Combine with TextField for complete validation and error handling, and use the prefix/suffix snippets to add context and enhance usability.
+</Tip>
+
+## Styling Notes
+
+- Uses `data-invalid` attribute for error state styling
+- Uses `data-disabled` attribute for disabled state styling
+- Uses `data-has-textarea` attribute when containing a TextArea
+- Child inputs receive `data-in-group` attribute for border adjustments
+- Prefix and suffix areas have classes `input-group__prefix` and `input-group__suffix` for custom styling

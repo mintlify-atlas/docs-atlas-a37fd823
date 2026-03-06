@@ -1,0 +1,466 @@
+---
+title: Component Composition
+description: Learn how to compose Shizen UI components to build complex interfaces
+---
+
+## Overview
+
+Shizen UI embraces a composition-first approach, allowing you to build complex UI patterns by combining simple, focused components. This guide covers the compound component pattern, using Svelte 5 snippets, and creating custom layouts.
+
+## Understanding Compound Components
+
+Compound components are a design pattern where a parent component works together with child components to create a complete UI element. This provides flexibility while maintaining encapsulation.
+
+### The Checkbox Pattern
+
+The `Checkbox` component is a perfect example of the compound component pattern:
+
+```svelte
+<script>
+  import { Checkbox, Label, Description } from '@shizen-ui/svelte';
+  
+  let agree = $state(false);
+</script>
+
+<Checkbox bind:checked={agree}>
+  <Checkbox.Control />
+  <Checkbox.Content>
+    <Label>Accept terms and conditions</Label>
+    <Description>Agree to our terms and conditions</Description>
+  </Checkbox.Content>
+</Checkbox>
+```
+
+This pattern offers several advantages:
+
+- **Flexibility**: Customize individual parts independently
+- **Type Safety**: TypeScript ensures correct component usage
+- **Accessibility**: Proper ARIA relationships are maintained automatically
+- **Maintainability**: Clear component hierarchy
+
+### Component Anatomy
+
+Here's how the compound pattern works in the Checkbox component:
+
+- **Checkbox**: Root component that manages state and context
+- **Checkbox.Control**: Visual checkbox control with indicator
+- **Checkbox.Indicator**: The checkmark icon (optional custom)
+- **Checkbox.Content**: Container for label and description
+
+<Tip>
+The root component (like `Checkbox`) uses Svelte's context API to share state with its child components. This ensures all parts work together seamlessly.
+</Tip>
+
+## Using Snippets in Svelte 5
+
+Svelte 5 introduces snippets as a powerful way to create reusable template fragments. Shizen UI components leverage snippets extensively.
+
+### Basic Snippet Usage
+
+Components that accept custom content use the `Snippet` type:
+
+```svelte
+<script>
+  import { Button } from '@shizen-ui/svelte';
+</script>
+
+<Button>
+  {#snippet children()}
+    <span class="flex items-center gap-2">
+      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+      </svg>
+      Settings
+    </span>
+  {/snippet}
+</Button>
+```
+
+Or more commonly, using the implicit children snippet:
+
+```svelte
+<Button>
+  <span class="flex items-center gap-2">
+    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+      <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+    </svg>
+    Settings
+  </span>
+</Button>
+```
+
+### Custom Indicators
+
+Replace default component parts with custom snippets:
+
+```svelte
+<script>
+  import { Checkbox, Label } from '@shizen-ui/svelte';
+  
+  let checked = $state(false);
+</script>
+
+<Checkbox bind:checked>
+  <Checkbox.Control>
+    {#if checked}
+      <Checkbox.Indicator>
+        <!-- Custom checkmark icon -->
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+        </svg>
+      </Checkbox.Indicator>
+    {/if}
+  </Checkbox.Control>
+  <Checkbox.Content>
+    <Label>Custom Indicator</Label>
+  </Checkbox.Content>
+</Checkbox>
+```
+
+## Composing Form Components
+
+Shizen UI provides flexible form components that work together seamlessly.
+
+### Basic TextField Composition
+
+```svelte
+<script>
+  import { TextField, Label, Input, Description, FieldError } from '@shizen-ui/svelte';
+  
+  let username = $state('');
+  const MAX_CHARS = 10;
+  const isInvalid = $derived(username.length > MAX_CHARS);
+</script>
+
+<TextField invalid={isInvalid}>
+  <Label>Username</Label>
+  <Input bind:value={username} placeholder="Enter your username" />
+  <Description>
+    Maximum {MAX_CHARS} characters ({username.length}/{MAX_CHARS}).
+  </Description>
+  <FieldError>
+    The username cannot exceed {MAX_CHARS} characters.
+  </FieldError>
+</TextField>
+```
+
+<Note>
+The `TextField` component uses context to share state (`invalid`, `disabled`, `required`, `id`) with all child components. This ensures proper ARIA attributes and styling automatically.
+</Note>
+
+### InputGroup Composition
+
+The `InputGroup` component allows you to add prefixes and suffixes to inputs:
+
+```svelte
+<script>
+  import { TextField, Label, InputGroup } from '@shizen-ui/svelte';
+</script>
+
+<TextField>
+  <Label>Email</Label>
+  <InputGroup>
+    <InputGroup.Prefix>
+      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+        <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+        <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+      </svg>
+    </InputGroup.Prefix>
+    <InputGroup.Input placeholder="example@mail.com" />
+  </InputGroup>
+</TextField>
+```
+
+With suffix:
+
+```svelte
+<TextField>
+  <Label>Amount</Label>
+  <InputGroup>
+    <InputGroup.Prefix>$</InputGroup.Prefix>
+    <InputGroup.Input type="number" placeholder="0.00" />
+    <InputGroup.Suffix>USD</InputGroup.Suffix>
+  </InputGroup>
+</TextField>
+```
+
+## Building Custom Form Layouts
+
+<Steps>
+
+<Step title="Create a multi-field form">
+
+```svelte
+<script>
+  import { TextField, Label, Input, Description, Button } from '@shizen-ui/svelte';
+  
+  let formData = $state({
+    firstName: '',
+    lastName: '',
+    email: ''
+  });
+  
+  function handleSubmit() {
+    console.log('Form submitted:', formData);
+  }
+</script>
+
+<form on:submit|preventDefault={handleSubmit} class="space-y-4">
+  <div class="grid grid-cols-2 gap-4">
+    <TextField fullWidth>
+      <Label>First Name</Label>
+      <Input bind:value={formData.firstName} />
+    </TextField>
+    
+    <TextField fullWidth>
+      <Label>Last Name</Label>
+      <Input bind:value={formData.lastName} />
+    </TextField>
+  </div>
+  
+  <TextField fullWidth>
+    <Label>Email</Label>
+    <Input type="email" bind:value={formData.email} />
+    <Description>We'll never share your email.</Description>
+  </TextField>
+  
+  <Button type="submit" class="w-full">
+    Submit
+  </Button>
+</form>
+```
+
+</Step>
+
+<Step title="Add validation logic">
+
+```svelte
+<script>
+  import { TextField, Label, Input, FieldError } from '@shizen-ui/svelte';
+  
+  let email = $state('');
+  
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const isInvalidEmail = $derived(email.length > 0 && !emailPattern.test(email));
+</script>
+
+<TextField invalid={isInvalidEmail} fullWidth>
+  <Label required>Email Address</Label>
+  <Input type="email" bind:value={email} />
+  <FieldError>Please enter a valid email address.</FieldError>
+</TextField>
+```
+
+</Step>
+
+</Steps>
+
+## Radio and Checkbox Groups
+
+### CheckboxGroup Composition
+
+Group related checkboxes together:
+
+```svelte
+<script>
+  import { CheckboxGroup, Checkbox, Label } from '@shizen-ui/svelte';
+  
+  let selectedItems = $state(['item1']);
+</script>
+
+<CheckboxGroup bind:value={selectedItems} name="items">
+  <CheckboxGroup.Items class="space-y-2">
+    <Checkbox value="item1">
+      <Checkbox.Control />
+      <Checkbox.Content>
+        <Label>Item 1</Label>
+      </Checkbox.Content>
+    </Checkbox>
+    
+    <Checkbox value="item2">
+      <Checkbox.Control />
+      <Checkbox.Content>
+        <Label>Item 2</Label>
+      </Checkbox.Content>
+    </Checkbox>
+    
+    <Checkbox value="item3">
+      <Checkbox.Control />
+      <Checkbox.Content>
+        <Label>Item 3</Label>
+      </Checkbox.Content>
+    </Checkbox>
+  </CheckboxGroup.Items>
+</CheckboxGroup>
+```
+
+### RadioGroup Composition
+
+```svelte
+<script>
+  import { RadioGroup, Radio, Label, Description } from '@shizen-ui/svelte';
+  
+  let selected = $state('option1');
+</script>
+
+<RadioGroup bind:value={selected} name="options">
+  <RadioGroup.Items class="space-y-3">
+    <Radio value="option1">
+      <Radio.Control />
+      <Radio.Content>
+        <Label>Option 1</Label>
+        <Description>This is the first option</Description>
+      </Radio.Content>
+    </Radio>
+    
+    <Radio value="option2">
+      <Radio.Control />
+      <Radio.Content>
+        <Label>Option 2</Label>
+        <Description>This is the second option</Description>
+      </Radio.Content>
+    </Radio>
+  </RadioGroup.Items>
+</RadioGroup>
+```
+
+## ButtonGroup Composition
+
+Create connected button groups:
+
+```svelte
+<script>
+  import { ButtonGroup, Button } from '@shizen-ui/svelte';
+</script>
+
+<ButtonGroup variant="outline" size="md">
+  <Button>Left</Button>
+  <Button>Center</Button>
+  <Button>Right</Button>
+</ButtonGroup>
+```
+
+<Tip>
+The `ButtonGroup` component automatically applies `variant` and `size` to all child buttons, and `disabled` cascades down as well.
+</Tip>
+
+## Context Sharing Pattern
+
+Shizen UI uses Svelte's context API for component communication. Understanding this helps when building custom components:
+
+### How It Works
+
+1. **Parent sets context**: The root component (e.g., `TextField`) sets context with state
+2. **Children consume context**: Child components (e.g., `Input`, `Label`) read from context
+3. **Automatic updates**: Reactive context values update all consumers
+
+### Example: Field State Context
+
+The `TextField` component shares state with its children:
+
+```typescript
+// Inside TextField.svelte
+setFieldStateContext({
+  get invalid() { return invalid; },
+  get disabled() { return disabled; },
+  get required() { return required; },
+  get id() { return id; }
+});
+```
+
+Children like `Input` consume this context:
+
+```typescript
+// Inside Input.svelte
+const fieldContext = useFieldStateContext();
+const finalInvalid = $derived(fieldContext.exists ? fieldContext.invalid : invalid);
+```
+
+## Advanced Composition Patterns
+
+### Creating a Custom Field Component
+
+```svelte
+<script lang="ts">
+  import { TextField, Label, Input, InputGroup, Description, FieldError } from '@shizen-ui/svelte';
+  import type { Snippet } from 'svelte';
+  
+  interface Props {
+    label: string;
+    value: string;
+    error?: string;
+    description?: string;
+    icon?: Snippet;
+    required?: boolean;
+  }
+  
+  let { 
+    label, 
+    value = $bindable(''), 
+    error, 
+    description,
+    icon,
+    required = false 
+  }: Props = $props();
+  
+  const isInvalid = $derived(!!error);
+</script>
+
+<TextField invalid={isInvalid} fullWidth>
+  <Label {required}>{label}</Label>
+  
+  {#if icon}
+    <InputGroup>
+      <InputGroup.Prefix>
+        {@render icon()}
+      </InputGroup.Prefix>
+      <InputGroup.Input bind:value />
+    </InputGroup>
+  {:else}
+    <Input bind:value />
+  {/if}
+  
+  {#if description}
+    <Description>{description}</Description>
+  {/if}
+  
+  {#if error}
+    <FieldError>{error}</FieldError>
+  {/if}
+</TextField>
+```
+
+Usage:
+
+```svelte
+<script>
+  import CustomField from './CustomField.svelte';
+  
+  let email = $state('');
+</script>
+
+<CustomField 
+  label="Email" 
+  bind:value={email}
+  description="Your work email address"
+  required
+>
+  {#snippet icon()}
+    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+      <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+    </svg>
+  {/snippet}
+</CustomField>
+```
+
+## Best Practices
+
+- **Respect component boundaries**: Don't bypass the composition API by accessing internal elements directly
+- **Use provided sub-components**: Always use `Checkbox.Control` instead of creating your own control element
+- **Leverage context**: Let parent components manage shared state through context
+- **Keep it semantic**: Maintain proper HTML structure and ARIA relationships
+- **Compose upward**: Build complex components from simple ones, not vice versa
+
+<Warning>
+Avoid breaking the component hierarchy. For example, don't place a `Label` outside of its parent `TextField` or `Checkbox` context, as this breaks ARIA associations.
+</Warning>

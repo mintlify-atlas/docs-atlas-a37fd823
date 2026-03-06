@@ -1,0 +1,508 @@
+---
+title: Accessibility
+description: Learn about the accessibility features built into Shizen UI components
+---
+
+## Overview
+
+Shizen UI is built with accessibility as a core principle. All components follow WAI-ARIA best practices and are designed to work seamlessly with screen readers, keyboard navigation, and other assistive technologies.
+
+## ARIA Attributes
+
+Shizen UI components automatically apply appropriate ARIA attributes based on their state and context.
+
+### Automatic ARIA Labeling
+
+The `Input` component automatically links to labels and descriptions:
+
+```svelte
+<script>
+  import { TextField, Label, Input, Description, FieldError } from '@shizen-ui/svelte';
+  
+  let email = $state('');
+  const isInvalid = $derived(email.length > 0 && !email.includes('@'));
+</script>
+
+<TextField invalid={isInvalid}>
+  <Label>Email Address</Label>
+  <Input bind:value={email} type="email" />
+  <Description>Enter your work email</Description>
+  <FieldError>Please enter a valid email address</FieldError>
+</TextField>
+```
+
+This generates the following ARIA structure:
+
+```html
+<label for="field-abc123">Email Address</label>
+<input 
+  id="field-abc123"
+  aria-describedby="field-abc123-description"
+  aria-errormessage="field-abc123-error"
+  aria-invalid="true"
+/>
+<p id="field-abc123-description">Enter your work email</p>
+<p id="field-abc123-error" role="alert">Please enter a valid email address</p>
+```
+
+<Note>
+The `TextField` component automatically generates unique IDs and establishes proper ARIA relationships between the label, input, description, and error message.
+</Note>
+
+### Checkbox ARIA Attributes
+
+Checkboxes include proper ARIA states:
+
+```svelte
+<script>
+  import { Checkbox, Label } from '@shizen-ui/svelte';
+  
+  let checked = $state(false);
+</script>
+
+<Checkbox bind:checked>
+  <Checkbox.Control />
+  <Checkbox.Content>
+    <Label>I agree to the terms</Label>
+  </Checkbox.Content>
+</Checkbox>
+```
+
+Generates:
+
+```html
+<input 
+  type="checkbox"
+  id="checkbox-abc123"
+  aria-checked="false"
+  tabindex="0"
+/>
+```
+
+### Indeterminate State
+
+Checkboxes support the mixed (indeterminate) state:
+
+```svelte
+<script>
+  import { Checkbox, Label } from '@shizen-ui/svelte';
+  
+  let checked = $state<boolean | 'mixed'>('mixed');
+</script>
+
+<Checkbox bind:checked>
+  <Checkbox.Control />
+  <Checkbox.Content>
+    <Label>Select all items (some selected)</Label>
+  </Checkbox.Content>
+</Checkbox>
+```
+
+This sets `aria-checked="mixed"` and `indeterminate="true"` on the input element.
+
+## Keyboard Navigation
+
+All interactive components support full keyboard navigation following standard patterns.
+
+### Button Navigation
+
+- **Enter** or **Space**: Activates the button
+- **Tab**: Moves focus to next focusable element
+- **Shift + Tab**: Moves focus to previous focusable element
+
+```svelte
+<script>
+  import { Button } from '@shizen-ui/svelte';
+  
+  function handleClick() {
+    console.log('Button clicked');
+  }
+</script>
+
+<Button onclick={handleClick}>
+  Submit Form
+</Button>
+```
+
+### Checkbox Navigation
+
+- **Space**: Toggles the checkbox
+- **Enter**: Toggles the checkbox
+- **Tab**: Moves to next focusable element
+
+```svelte
+<script>
+  import { Checkbox, Label } from '@shizen-ui/svelte';
+  
+  let agreed = $state(false);
+</script>
+
+<Checkbox bind:checked={agreed}>
+  <Checkbox.Control />
+  <Checkbox.Content>
+    <Label>I accept the terms and conditions</Label>
+  </Checkbox.Content>
+</Checkbox>
+```
+
+<Tip>
+Checkboxes automatically handle keyboard events. The implementation in `Checkbox.svelte:111-116` shows the built-in keyboard support.
+</Tip>
+
+### Radio Group Navigation
+
+Radio groups implement roving tabindex for optimal keyboard navigation:
+
+- **Arrow Up/Down**: Navigate between radio options (vertical)
+- **Arrow Left/Right**: Navigate between radio options (horizontal)
+- **Space** or **Enter**: Select the focused radio
+- **Tab**: Moves focus to the next element outside the group
+
+```svelte
+<script>
+  import { RadioGroup, Radio, Label } from '@shizen-ui/svelte';
+  
+  let selected = $state('option1');
+</script>
+
+<RadioGroup bind:value={selected} name="options">
+  <RadioGroup.Items>
+    <Radio value="option1">
+      <Radio.Control />
+      <Radio.Content>
+        <Label>Option 1</Label>
+      </Radio.Content>
+    </Radio>
+    
+    <Radio value="option2">
+      <Radio.Control />
+      <Radio.Content>
+        <Label>Option 2</Label>
+      </Radio.Content>
+    </Radio>
+  </RadioGroup.Items>
+</RadioGroup>
+```
+
+<Note>
+Only the selected radio button in a group is in the tab order (`tabindex="0"`). Others have `tabindex="-1"` to optimize keyboard navigation. See `Radio.svelte:129` for implementation details.
+</Note>
+
+### Input Navigation
+
+- **Tab**: Moves focus to the input
+- Standard text editing shortcuts work as expected
+
+## Screen Reader Compatibility
+
+Shizen UI components are tested with popular screen readers including NVDA, JAWS, and VoiceOver.
+
+### Semantic HTML
+
+Components use proper semantic HTML elements:
+
+```svelte
+<!-- Label uses <label> element -->
+<Label>Username</Label>
+
+<!-- Description uses <p> with appropriate ID -->
+<Description>Must be at least 6 characters</Description>
+
+<!-- FieldError uses <p> with role="alert" -->
+<FieldError>Username is required</FieldError>
+```
+
+### Live Regions
+
+Error messages use `role="alert"` to announce changes immediately:
+
+```svelte
+<script>
+  import { TextField, Label, Input, FieldError } from '@shizen-ui/svelte';
+  
+  let value = $state('');
+  const isInvalid = $derived(value.length > 0 && value.length < 6);
+</script>
+
+<TextField invalid={isInvalid}>
+  <Label>Password</Label>
+  <Input type="password" bind:value />
+  <FieldError>
+    Password must be at least 6 characters
+  </FieldError>
+</TextField>
+```
+
+When the error appears, screen readers announce: "Password must be at least 6 characters"
+
+<Tip>
+The `role="alert"` attribute in `FieldError.svelte:43` ensures screen readers announce errors as soon as they appear.
+</Tip>
+
+## Focus Management
+
+Shizen UI handles focus states properly for all interactive components.
+
+### Disabled State
+
+Disabled components are properly removed from tab order:
+
+```svelte
+<script>
+  import { Button, Input, Checkbox } from '@shizen-ui/svelte';
+</script>
+
+<Button disabled>Cannot Click</Button>
+<Input disabled value="Cannot Edit" />
+
+<Checkbox disabled checked>
+  <Checkbox.Control />
+  <Checkbox.Content>
+    <Label>Cannot Toggle</Label>
+  </Checkbox.Content>
+</Checkbox>
+```
+
+All disabled elements:
+- Have `disabled` attribute set
+- Have `tabindex="-1"` (for checkboxes and radios)
+- Include `data-disabled="true"` for styling
+- Cannot receive keyboard focus
+
+### Focus Restoration
+
+When clicking on a checkbox or radio container, focus is programmatically moved to the input:
+
+```svelte
+<!-- From Checkbox.svelte:118-128 -->
+<div onclick={handleContainerClick}>
+  <!-- Clicking anywhere focuses the input -->
+</div>
+```
+
+### Focus Visible Styles
+
+Components include focus-visible styles to show keyboard focus without interfering with mouse interactions:
+
+```css
+/* Example focus styles */
+.button:focus-visible {
+  @apply ring-2 ring-offset-2 ring-primary;
+}
+
+.checkbox__input:focus-visible + .checkbox__control {
+  @apply ring-2 ring-offset-2 ring-primary;
+}
+```
+
+## Form Validation and Error Messages
+
+Shizen UI provides accessible form validation out of the box.
+
+### Required Fields
+
+Required fields are marked with a visual indicator and ARIA attribute:
+
+```svelte
+<script>
+  import { TextField, Label, Input } from '@shizen-ui/svelte';
+</script>
+
+<TextField required>
+  <Label>Email Address</Label>
+  <Input type="email" />
+</TextField>
+```
+
+This generates:
+
+```html
+<label for="field-abc123" data-required="true">
+  Email Address
+  <span class="label__required-indicator" aria-hidden="true">*</span>
+</label>
+```
+
+<Note>
+The asterisk (*) has `aria-hidden="true"` because the required state is conveyed through the `data-required` attribute, preventing redundant announcements. See `Label.svelte:50-54`.
+</Note>
+
+### Error Message Association
+
+Errors are properly associated with inputs using `aria-errormessage`:
+
+```svelte
+<script>
+  import { TextField, Label, Input, FieldError } from '@shizen-ui/svelte';
+  
+  let email = $state('');
+  const isInvalid = $derived(email.length > 0 && !email.includes('@'));
+</script>
+
+<TextField invalid={isInvalid}>
+  <Label>Email</Label>
+  <Input bind:value={email} />
+  <FieldError>Please enter a valid email address</FieldError>
+</TextField>
+```
+
+The input automatically gets:
+
+```html
+<input
+  aria-invalid="true"
+  aria-errormessage="field-abc123-error"
+/>
+<p id="field-abc123-error" role="alert">
+  Please enter a valid email address
+</p>
+```
+
+### Description vs Error Message
+
+Description shows when the field is valid or doesn't have an error state:
+
+```svelte
+<script>
+  import { TextField, Label, Input, Description, FieldError } from '@shizen-ui/svelte';
+  
+  let username = $state('');
+  const MAX_LENGTH = 20;
+  const isInvalid = $derived(username.length > MAX_LENGTH);
+</script>
+
+<TextField invalid={isInvalid}>
+  <Label>Username</Label>
+  <Input bind:value={username} />
+  <Description>Choose a username (max {MAX_LENGTH} characters)</Description>
+  <FieldError>Username is too long</FieldError>
+</TextField>
+```
+
+Behavior:
+- When valid: Shows description with `aria-describedby`
+- When invalid: Shows error with `aria-errormessage`
+- Description component automatically hides when error is shown (unless `keepDescription` is set)
+
+<Tip>
+For checkboxes and radios, the description remains visible even when invalid because it contains important context. This is controlled by the `keepDescription` property in the field state context.
+</Tip>
+
+## State Indicators
+
+Components expose data attributes for styling based on state:
+
+### Available Data Attributes
+
+```svelte
+<!-- All components -->
+<Button data-disabled="true" />
+
+<!-- Form components -->
+<Input 
+  data-invalid="true"
+  data-disabled="false"
+  data-in-group="true"
+/>
+
+<!-- Checkbox/Radio -->
+<Checkbox
+  data-checked="true"
+  data-invalid="false"
+  data-disabled="false"
+/>
+```
+
+You can use these for custom styling:
+
+```css
+/* Style invalid inputs */
+[data-invalid="true"] {
+  border-color: red;
+}
+
+/* Style checked checkboxes */
+[data-checked="true"] .checkbox__control {
+  background-color: blue;
+}
+```
+
+## Best Practices
+
+<Steps>
+
+<Step title="Always provide labels">
+
+Every form input should have an associated label:
+
+```svelte
+<!-- Good -->
+<TextField>
+  <Label>Email Address</Label>
+  <Input type="email" />
+</TextField>
+
+<!-- Bad - no label -->
+<Input type="email" placeholder="Email" />
+```
+
+</Step>
+
+<Step title="Use descriptions for context">
+
+Provide helpful descriptions for complex fields:
+
+```svelte
+<TextField>
+  <Label>Password</Label>
+  <Input type="password" />
+  <Description>
+    Must be at least 8 characters with uppercase, lowercase, and numbers
+  </Description>
+</TextField>
+```
+
+</Step>
+
+<Step title="Provide clear error messages">
+
+Error messages should be specific and actionable:
+
+```svelte
+<!-- Good -->
+<FieldError>Email must include an @ symbol</FieldError>
+
+<!-- Bad - too vague -->
+<FieldError>Invalid input</FieldError>
+```
+
+</Step>
+
+<Step title="Test with keyboard only">
+
+Regularly test your forms using only the keyboard to ensure all functionality is accessible.
+
+</Step>
+
+</Steps>
+
+<Warning>
+Never rely solely on color to convey state. Always combine color changes with text, icons, or ARIA attributes.
+</Warning>
+
+## Testing Accessibility
+
+Tools to test your Shizen UI implementations:
+
+- **Keyboard Navigation**: Navigate using only Tab, Enter, Space, and Arrow keys
+- **Screen Reader**: Test with NVDA (Windows), JAWS (Windows), or VoiceOver (macOS)
+- **Browser DevTools**: Use accessibility inspectors in Chrome, Firefox, or Safari
+- **axe DevTools**: Browser extension for automated accessibility testing
+- **Lighthouse**: Run accessibility audits in Chrome DevTools
+
+## Additional Resources
+
+- [WAI-ARIA Authoring Practices](https://www.w3.org/WAI/ARIA/apg/)
+- [WebAIM: Keyboard Accessibility](https://webaim.org/techniques/keyboard/)
+- [WebAIM: Screen Reader Testing](https://webaim.org/articles/screenreader_testing/)
+- [WCAG 2.1 Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)

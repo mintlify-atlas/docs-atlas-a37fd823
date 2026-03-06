@@ -1,0 +1,371 @@
+---
+title: Text Area
+description: A multi-line text input component for longer form content with validation support and context integration.
+---
+
+## Overview
+
+The TextArea component provides a multi-line text input control for longer content like comments, descriptions, or messages. It integrates seamlessly with TextField for automatic validation state management and can be used within an InputGroup for enhanced functionality.
+
+## Installation
+
+```bash
+npm install @shizen-ui/svelte
+```
+
+## Import
+
+```typescript
+import { TextArea } from '@shizen-ui/svelte';
+```
+
+## Basic Usage
+
+<CodeGroup>
+```svelte Default TextArea
+<script>
+  import { TextArea } from '@shizen-ui/svelte';
+  
+  let value = $state('');
+</script>
+
+<TextArea bind:value placeholder="Enter your message" />
+```
+
+```svelte Custom Rows
+<script>
+  import { TextArea } from '@shizen-ui/svelte';
+  
+  let comment = $state('');
+</script>
+
+<TextArea bind:value={comment} rows={5} placeholder="Leave a comment" />
+```
+</CodeGroup>
+
+## Props
+
+<ParamField path="value" type="string" default="">
+  The current value of the textarea. Use `bind:value` for two-way binding.
+</ParamField>
+
+<ParamField path="rows" type="number" default={3}>
+  The number of visible text lines.
+</ParamField>
+
+<ParamField path="fullWidth" type="boolean" default={false}>
+  When true, the textarea takes up the full width of its container.
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default={false}>
+  When true, disables the textarea.
+</ParamField>
+
+<ParamField path="invalid" type="boolean" default={false}>
+  When true, applies invalid/error styling. Automatically managed when used within a TextField.
+</ParamField>
+
+<ParamField path="placeholder" type="string">
+  Placeholder text displayed when the textarea is empty.
+</ParamField>
+
+<ParamField path="id" type="string">
+  The HTML id attribute. Automatically managed when used within a TextField.
+</ParamField>
+
+<ParamField path="class" type="string">
+  Additional CSS classes to apply to the textarea.
+</ParamField>
+
+<Note>
+  All standard HTML textarea attributes (like `name`, `required`, `minlength`, `maxlength`, `autocomplete`, etc.) are supported through rest props.
+</Note>
+
+## Advanced Examples
+
+### With TextField (Recommended)
+
+Use within a TextField for automatic label, description, and error handling:
+
+```svelte
+<script>
+  import { TextArea, TextField, Label, Description, FieldError } from '@shizen-ui/svelte';
+  
+  let bio = $state('');
+  let invalid = $state(false);
+  
+  function validate() {
+    invalid = bio.length > 500;
+  }
+</script>
+
+<TextField {invalid} fullWidth>
+  <Label>Biography</Label>
+  <TextArea 
+    bind:value={bio} 
+    oninput={validate}
+    rows={4}
+    placeholder="Tell us about yourself" 
+    maxlength={500}
+  />
+  <Description>Maximum 500 characters ({bio.length}/500)</Description>
+  {#if invalid}
+    <FieldError>Biography is too long.</FieldError>
+  {/if}
+</TextField>
+```
+
+### Full Width
+
+```svelte
+<TextArea fullWidth placeholder="This textarea takes full width" />
+```
+
+### Custom Height
+
+<CodeGroup>
+```svelte Small (3 rows)
+<TextArea rows={3} placeholder="Small textarea" />
+```
+
+```svelte Medium (5 rows)
+<TextArea rows={5} placeholder="Medium textarea" />
+```
+
+```svelte Large (10 rows)
+<TextArea rows={10} placeholder="Large textarea" />
+```
+</CodeGroup>
+
+### Disabled State
+
+```svelte
+<TextArea disabled value="This content cannot be edited" />
+```
+
+### Invalid State
+
+```svelte
+<TextArea invalid value="This content has errors" />
+```
+
+### With Character Count
+
+```svelte
+<script>
+  import { TextArea } from '@shizen-ui/svelte';
+  
+  let message = $state('');
+  const maxLength = 280;
+  let remaining = $derived(maxLength - message.length);
+</script>
+
+<div>
+  <TextArea 
+    bind:value={message} 
+    maxlength={maxLength}
+    placeholder="What's on your mind?"
+    fullWidth
+  />
+  <p class="text-sm text-gray-500 mt-1">
+    {remaining} characters remaining
+  </p>
+</div>
+```
+
+### With InputGroup
+
+```svelte
+<script>
+  import { TextArea, InputGroup } from '@shizen-ui/svelte';
+  
+  let feedback = $state('');
+</script>
+
+<InputGroup hasTextArea fullWidth>
+  {#snippet prefix()}
+    <i class="i-lucide-message-square"></i>
+  {/snippet}
+  <TextArea 
+    bind:value={feedback} 
+    placeholder="Share your feedback"
+    rows={4}
+  />
+</InputGroup>
+```
+
+<Note>
+  When using TextArea inside an InputGroup, always set `hasTextArea={true}` on the InputGroup for proper styling.
+</Note>
+
+### Auto-growing TextArea
+
+```svelte
+<script>
+  import { TextArea } from '@shizen-ui/svelte';
+  
+  let content = $state('');
+  let textarea: HTMLTextAreaElement;
+  
+  function autoResize() {
+    if (textarea) {
+      textarea.style.height = 'auto';
+      textarea.style.height = textarea.scrollHeight + 'px';
+    }
+  }
+</script>
+
+<TextArea 
+  bind:value={content}
+  bind:this={textarea}
+  oninput={autoResize}
+  rows={3}
+  placeholder="This textarea grows as you type"
+  class="resize-none overflow-hidden"
+/>
+```
+
+### With Validation
+
+```svelte
+<script>
+  import { TextArea, TextField, Label, FieldError } from '@shizen-ui/svelte';
+  
+  let description = $state('');
+  let error = $state('');
+  
+  function validate() {
+    if (description.length < 10) {
+      error = 'Description must be at least 10 characters';
+    } else if (description.length > 1000) {
+      error = 'Description must be less than 1000 characters';
+    } else {
+      error = '';
+    }
+  }
+</script>
+
+<TextField invalid={!!error} fullWidth>
+  <Label>Product Description</Label>
+  <TextArea 
+    bind:value={description}
+    oninput={validate}
+    onblur={validate}
+    rows={6}
+    placeholder="Describe your product..."
+  />
+  {#if error}
+    <FieldError>{error}</FieldError>
+  {/if}
+</TextField>
+```
+
+### Rich Content Editor Wrapper
+
+```svelte
+<script>
+  import { TextArea } from '@shizen-ui/svelte';
+  
+  let markdown = $state('');
+</script>
+
+<div class="space-y-2">
+  <div class="flex items-center gap-2 p-2 border-b">
+    <button class="p-1 hover:bg-gray-100 rounded">
+      <i class="i-lucide-bold"></i>
+    </button>
+    <button class="p-1 hover:bg-gray-100 rounded">
+      <i class="i-lucide-italic"></i>
+    </button>
+    <button class="p-1 hover:bg-gray-100 rounded">
+      <i class="i-lucide-list"></i>
+    </button>
+  </div>
+  <TextArea 
+    bind:value={markdown}
+    rows={10}
+    fullWidth
+    placeholder="Write in Markdown..."
+  />
+</div>
+```
+
+### Comment Box
+
+```svelte
+<script>
+  import { TextArea, Button } from '@shizen-ui/svelte';
+  
+  let comment = $state('');
+  
+  function submitComment() {
+    console.log('Submit:', comment);
+    comment = '';
+  }
+</script>
+
+<div class="space-y-2">
+  <TextArea 
+    bind:value={comment}
+    rows={4}
+    fullWidth
+    placeholder="Add a comment..."
+  />
+  <div class="flex justify-end gap-2">
+    <Button variant="tertiary" onclick={() => comment = ''}>Cancel</Button>
+    <Button onclick={submitComment} disabled={!comment.trim()}>Post Comment</Button>
+  </div>
+</div>
+```
+
+## Context Integration
+
+### TextField Context
+
+When used within a TextField, the TextArea automatically receives:
+
+- `id` - Generated field ID for label association
+- `invalid` - Validation state from the TextField
+- `disabled` - Disabled state from the TextField
+- `aria-describedby` - Links to Description component
+- `aria-errormessage` - Links to FieldError component
+
+### InputGroup Context
+
+When used within an InputGroup, the TextArea automatically receives:
+
+- `disabled` - Disabled state from the InputGroup
+- `data-in-group` - Attribute for styling adjustments
+
+## Accessibility
+
+- Uses semantic `<textarea>` element
+- Supports all standard ARIA attributes
+- `aria-invalid` automatically set based on `invalid` prop
+- When used with TextField, automatically linked to labels, descriptions, and error messages
+- Supports keyboard navigation (Tab to focus, standard text editing keys)
+- Always provide a label (using Label component or `aria-label` attribute):
+
+```svelte
+<TextArea aria-label="Feedback" placeholder="Share your thoughts..." />
+```
+
+<Tip>
+  Always use the TextArea component within a TextField wrapper for the best accessibility and user experience. The TextField handles all the complex ARIA relationships and validation states automatically.
+</Tip>
+
+## Styling Notes
+
+- The TextArea uses the `data-invalid` attribute for styling error states
+- When in an InputGroup, uses `data-in-group` for border adjustments
+- The `fullWidth` variant applies `textarea--full-width` class
+- By default, textareas are resizable - use `class="resize-none"` to disable
+- Fully customizable with the `class` prop
+
+## Usage Tips
+
+- Set appropriate `rows` based on expected content length (3-5 for short content, 6-10 for longer content)
+- Use `maxlength` to limit input length and prevent overly long submissions
+- Combine with character count display for better user feedback
+- Consider implementing auto-grow behavior for dynamic content
+- For rich text editing, consider wrapping with a toolbar for formatting options

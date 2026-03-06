@@ -1,0 +1,533 @@
+---
+title: Checkbox Group
+description: A container for managing multiple checkboxes as a coordinated group with shared state and validation.
+---
+
+## Overview
+
+The CheckboxGroup component provides a container for managing multiple checkboxes with coordinated state. It handles the selection of multiple values, propagates disabled and invalid states to child checkboxes, and supports both horizontal and vertical layouts.
+
+## Installation
+
+```bash
+npm install @shizen-ui/svelte
+```
+
+## Import
+
+```typescript
+import { CheckboxGroup, Checkbox } from '@shizen-ui/svelte';
+```
+
+## Basic Usage
+
+<CodeGroup>
+```svelte Simple Group
+<script>
+  import { CheckboxGroup, Checkbox } from '@shizen-ui/svelte';
+  
+  let selected = $state<string[]>([]);
+</script>
+
+<CheckboxGroup bind:value={selected}>
+  <Checkbox value="apple">
+    <Checkbox.Control />
+    <Checkbox.Content>Apple</Checkbox.Content>
+  </Checkbox>
+  
+  <Checkbox value="banana">
+    <Checkbox.Control />
+    <Checkbox.Content>Banana</Checkbox.Content>
+  </Checkbox>
+  
+  <Checkbox value="orange">
+    <Checkbox.Control />
+    <Checkbox.Content>Orange</Checkbox.Content>
+  </Checkbox>
+</CheckboxGroup>
+
+<p>Selected: {selected.join(', ')}</p>
+```
+
+```svelte With Label
+<script>
+  import { CheckboxGroup, Checkbox, TextField, Label } from '@shizen-ui/svelte';
+  
+  let interests = $state<string[]>([]);
+</script>
+
+<TextField>
+  <Label>Select your interests</Label>
+  <CheckboxGroup bind:value={interests}>
+    <Checkbox value="sports">
+      <Checkbox.Control />
+      <Checkbox.Content>Sports</Checkbox.Content>
+    </Checkbox>
+    
+    <Checkbox value="music">
+      <Checkbox.Control />
+      <Checkbox.Content>Music</Checkbox.Content>
+    </Checkbox>
+    
+    <Checkbox value="art">
+      <Checkbox.Control />
+      <Checkbox.Content>Art</Checkbox.Content>
+    </Checkbox>
+  </CheckboxGroup>
+</TextField>
+```
+</CodeGroup>
+
+## Props
+
+<ParamField path="value" type="string[]" default={[]}>
+  Array of selected checkbox values. Use `bind:value` for two-way binding.
+</ParamField>
+
+<ParamField path="name" type="string">
+  The name attribute shared by all checkboxes in the group. Auto-generated if not provided.
+</ParamField>
+
+<ParamField path="orientation" type="string" default="vertical">
+  The layout direction of the checkbox group.
+  
+  Options: `"vertical"` | `"horizontal"`
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default={false}>
+  When true, disables all checkboxes in the group.
+</ParamField>
+
+<ParamField path="invalid" type="boolean" default={false}>
+  When true, marks all checkboxes in the group as invalid for error styling.
+</ParamField>
+
+<ParamField path="required" type="boolean" default={false}>
+  When true, indicates the group requires at least one selection.
+</ParamField>
+
+<ParamField path="id" type="string">
+  The ID for the checkbox group container. Auto-generated if not provided.
+</ParamField>
+
+<ParamField path="class" type="string">
+  Additional CSS classes to apply to the group container.
+</ParamField>
+
+## Orientation
+
+### Vertical (Default)
+
+```svelte
+<script>
+  import { CheckboxGroup, Checkbox } from '@shizen-ui/svelte';
+  
+  let selected = $state<string[]>([]);
+</script>
+
+<CheckboxGroup bind:value={selected} orientation="vertical">
+  <Checkbox value="option1">
+    <Checkbox.Control />
+    <Checkbox.Content>Option 1</Checkbox.Content>
+  </Checkbox>
+  
+  <Checkbox value="option2">
+    <Checkbox.Control />
+    <Checkbox.Content>Option 2</Checkbox.Content>
+  </Checkbox>
+  
+  <Checkbox value="option3">
+    <Checkbox.Control />
+    <Checkbox.Content>Option 3</Checkbox.Content>
+  </Checkbox>
+</CheckboxGroup>
+```
+
+### Horizontal
+
+```svelte
+<script>
+  import { CheckboxGroup, Checkbox } from '@shizen-ui/svelte';
+  
+  let selected = $state<string[]>([]);
+</script>
+
+<CheckboxGroup bind:value={selected} orientation="horizontal">
+  <Checkbox value="xs">
+    <Checkbox.Control />
+    <Checkbox.Content>XS</Checkbox.Content>
+  </Checkbox>
+  
+  <Checkbox value="s">
+    <Checkbox.Control />
+    <Checkbox.Content>S</Checkbox.Content>
+  </Checkbox>
+  
+  <Checkbox value="m">
+    <Checkbox.Control />
+    <Checkbox.Content>M</Checkbox.Content>
+  </Checkbox>
+  
+  <Checkbox value="l">
+    <Checkbox.Control />
+    <Checkbox.Content>L</Checkbox.Content>
+  </Checkbox>
+</CheckboxGroup>
+```
+
+## State Management
+
+### Controlled State
+
+```svelte
+<script>
+  import { CheckboxGroup, Checkbox } from '@shizen-ui/svelte';
+  
+  let preferences = $state<string[]>(['notifications', 'newsletter']);
+  
+  function clearAll() {
+    preferences = [];
+  }
+  
+  function selectAll() {
+    preferences = ['notifications', 'newsletter', 'updates', 'marketing'];
+  }
+</script>
+
+<div>
+  <button onclick={selectAll}>Select All</button>
+  <button onclick={clearAll}>Clear All</button>
+</div>
+
+<CheckboxGroup bind:value={preferences}>
+  <Checkbox value="notifications">
+    <Checkbox.Control />
+    <Checkbox.Content>Push Notifications</Checkbox.Content>
+  </Checkbox>
+  
+  <Checkbox value="newsletter">
+    <Checkbox.Control />
+    <Checkbox.Content>Newsletter</Checkbox.Content>
+  </Checkbox>
+  
+  <Checkbox value="updates">
+    <Checkbox.Control />
+    <Checkbox.Content>Product Updates</Checkbox.Content>
+  </Checkbox>
+  
+  <Checkbox value="marketing">
+    <Checkbox.Control />
+    <Checkbox.Content>Marketing Emails</Checkbox.Content>
+  </Checkbox>
+</CheckboxGroup>
+
+<p>Selected: {preferences.length} items</p>
+```
+
+## Validation
+
+### Required Group
+
+```svelte
+<script>
+  import { CheckboxGroup, Checkbox, TextField, Label, FieldError } from '@shizen-ui/svelte';
+  
+  let skills = $state<string[]>([]);
+  let showError = $state(false);
+  
+  function validate() {
+    showError = skills.length === 0;
+  }
+</script>
+
+<TextField invalid={showError}>
+  <Label>Select your skills (required)</Label>
+  <CheckboxGroup bind:value={skills} required invalid={showError}>
+    <Checkbox value="html">
+      <Checkbox.Control />
+      <Checkbox.Content>HTML</Checkbox.Content>
+    </Checkbox>
+    
+    <Checkbox value="css">
+      <Checkbox.Control />
+      <Checkbox.Content>CSS</Checkbox.Content>
+    </Checkbox>
+    
+    <Checkbox value="javascript">
+      <Checkbox.Control />
+      <Checkbox.Content>JavaScript</Checkbox.Content>
+    </Checkbox>
+  </CheckboxGroup>
+  {#if showError}
+    <FieldError>Please select at least one skill</FieldError>
+  {/if}
+</TextField>
+
+<button onclick={validate}>Validate</button>
+```
+
+### With Custom Validation
+
+```svelte
+<script>
+  import { CheckboxGroup, Checkbox, TextField, Label, FieldError } from '@shizen-ui/svelte';
+  
+  let days = $state<string[]>([]);
+  
+  const minDays = 2;
+  const isValid = $derived(days.length >= minDays);
+</script>
+
+<TextField invalid={!isValid}>
+  <Label>Select availability (minimum {minDays} days)</Label>
+  <CheckboxGroup bind:value={days} invalid={!isValid}>
+    <Checkbox value="mon">
+      <Checkbox.Control />
+      <Checkbox.Content>Monday</Checkbox.Content>
+    </Checkbox>
+    
+    <Checkbox value="tue">
+      <Checkbox.Control />
+      <Checkbox.Content>Tuesday</Checkbox.Content>
+    </Checkbox>
+    
+    <Checkbox value="wed">
+      <Checkbox.Control />
+      <Checkbox.Content>Wednesday</Checkbox.Content>
+    </Checkbox>
+    
+    <Checkbox value="thu">
+      <Checkbox.Control />
+      <Checkbox.Content>Thursday</Checkbox.Content>
+    </Checkbox>
+    
+    <Checkbox value="fri">
+      <Checkbox.Control />
+      <Checkbox.Content>Friday</Checkbox.Content>
+    </Checkbox>
+  </CheckboxGroup>
+  {#if !isValid}
+    <FieldError>Please select at least {minDays} days</FieldError>
+  {/if}
+</TextField>
+```
+
+## Advanced Examples
+
+### Disabled Group
+
+```svelte
+<CheckboxGroup value={['option1', 'option2']} disabled>
+  <Checkbox value="option1">
+    <Checkbox.Control />
+    <Checkbox.Content>Option 1 (checked)</Checkbox.Content>
+  </Checkbox>
+  
+  <Checkbox value="option2">
+    <Checkbox.Control />
+    <Checkbox.Content>Option 2 (checked)</Checkbox.Content>
+  </Checkbox>
+  
+  <Checkbox value="option3">
+    <Checkbox.Control />
+    <Checkbox.Content>Option 3</Checkbox.Content>
+  </Checkbox>
+</CheckboxGroup>
+```
+
+### Nested Groups with Categories
+
+```svelte
+<script>
+  import { CheckboxGroup, Checkbox } from '@shizen-ui/svelte';
+  
+  let frontendSkills = $state<string[]>([]);
+  let backendSkills = $state<string[]>([]);
+  
+  const allSkills = $derived([...frontendSkills, ...backendSkills]);
+</script>
+
+<div class="space-y-4">
+  <div>
+    <h3 class="font-semibold mb-2">Frontend</h3>
+    <CheckboxGroup bind:value={frontendSkills}>
+      <Checkbox value="react">
+        <Checkbox.Control />
+        <Checkbox.Content>React</Checkbox.Content>
+      </Checkbox>
+      
+      <Checkbox value="vue">
+        <Checkbox.Control />
+        <Checkbox.Content>Vue</Checkbox.Content>
+      </Checkbox>
+      
+      <Checkbox value="svelte">
+        <Checkbox.Control />
+        <Checkbox.Content>Svelte</Checkbox.Content>
+      </Checkbox>
+    </CheckboxGroup>
+  </div>
+  
+  <div>
+    <h3 class="font-semibold mb-2">Backend</h3>
+    <CheckboxGroup bind:value={backendSkills}>
+      <Checkbox value="node">
+        <Checkbox.Control />
+        <Checkbox.Content>Node.js</Checkbox.Content>
+      </Checkbox>
+      
+      <Checkbox value="python">
+        <Checkbox.Control />
+        <Checkbox.Content>Python</Checkbox.Content>
+      </Checkbox>
+      
+      <Checkbox value="go">
+        <Checkbox.Control />
+        <Checkbox.Content>Go</Checkbox.Content>
+      </Checkbox>
+    </CheckboxGroup>
+  </div>
+  
+  <p>Total selected: {allSkills.length}</p>
+</div>
+```
+
+### With Description
+
+```svelte
+<script>
+  import { CheckboxGroup, Checkbox, TextField, Label, Description } from '@shizen-ui/svelte';
+  
+  let features = $state<string[]>([]);
+</script>
+
+<TextField>
+  <Label>Beta Features</Label>
+  <Description>Enable experimental features (may be unstable)</Description>
+  <CheckboxGroup bind:value={features}>
+    <Checkbox value="feature1">
+      <Checkbox.Control />
+      <Checkbox.Content>AI-powered suggestions</Checkbox.Content>
+    </Checkbox>
+    
+    <Checkbox value="feature2">
+      <Checkbox.Control />
+      <Checkbox.Content>Real-time collaboration</Checkbox.Content>
+    </Checkbox>
+    
+    <Checkbox value="feature3">
+      <Checkbox.Control />
+      <Checkbox.Content>Advanced analytics</Checkbox.Content>
+    </Checkbox>
+  </CheckboxGroup>
+</TextField>
+```
+
+### Dynamic Options
+
+```svelte
+<script>
+  import { CheckboxGroup, Checkbox } from '@shizen-ui/svelte';
+  
+  let selected = $state<string[]>([]);
+  
+  const options = [
+    { id: '1', label: 'Option 1', description: 'First option' },
+    { id: '2', label: 'Option 2', description: 'Second option' },
+    { id: '3', label: 'Option 3', description: 'Third option' },
+  ];
+</script>
+
+<CheckboxGroup bind:value={selected}>
+  {#each options as option (option.id)}
+    <Checkbox value={option.id}>
+      <Checkbox.Control />
+      <Checkbox.Content>
+        <div>
+          <div class="font-medium">{option.label}</div>
+          <div class="text-sm text-gray-500">{option.description}</div>
+        </div>
+      </Checkbox.Content>
+    </Checkbox>
+  {/each}
+</CheckboxGroup>
+```
+
+## Context Propagation
+
+The CheckboxGroup automatically provides context to child Checkbox components:
+
+- `value` - The array of selected values
+- `name` - Shared name for all checkboxes
+- `disabled` - Disabled state inherited by all children
+- `invalid` - Invalid state inherited by all children
+- `orientation` - Layout direction
+- `toggleValue(value: string)` - Function to toggle a value in the selection
+
+Child checkboxes automatically coordinate with the group and don't need individual `bind:checked` props.
+
+<Note>
+  When a Checkbox is inside a CheckboxGroup, its `value` prop is required to identify which option it represents in the group's value array.
+</Note>
+
+## Accessibility
+
+- Uses `role="group"` for semantic grouping of checkboxes
+- Child checkboxes maintain full keyboard navigation
+- Group state (`disabled`, `invalid`) is propagated via data attributes
+- Data attributes applied:
+  - `data-disabled` - When the group is disabled
+  - `data-invalid` - When the group is invalid
+  - `data-orientation` - The layout orientation
+- Combine with Label component for proper labeling:
+
+```svelte
+<TextField>
+  <Label>Choose your preferences</Label>
+  <CheckboxGroup bind:value={selected}>
+    <!-- checkboxes -->
+  </CheckboxGroup>
+</TextField>
+```
+
+- Use Description for additional context
+- Use FieldError to display validation messages
+
+<Tip>
+  Use CheckboxGroup with TextField, Label, and FieldError components for complete form field functionality with proper accessibility and validation.
+</Tip>
+
+## Form Integration
+
+All checkboxes in the group share the same `name` attribute, allowing multiple values to be submitted with the form:
+
+```svelte
+<script>
+  import { CheckboxGroup, Checkbox } from '@shizen-ui/svelte';
+  
+  let selected = $state<string[]>(['option1']);
+  
+  function handleSubmit(e: SubmitEvent) {
+    e.preventDefault();
+    const formData = new FormData(e.target as HTMLFormElement);
+    const values = formData.getAll('preferences');
+    console.log('Selected:', values);
+  }
+</script>
+
+<form onsubmit={handleSubmit}>
+  <CheckboxGroup bind:value={selected} name="preferences">
+    <Checkbox value="option1">
+      <Checkbox.Control />
+      <Checkbox.Content>Option 1</Checkbox.Content>
+    </Checkbox>
+    
+    <Checkbox value="option2">
+      <Checkbox.Control />
+      <Checkbox.Content>Option 2</Checkbox.Content>
+    </Checkbox>
+  </CheckboxGroup>
+  
+  <button type="submit">Submit</button>
+</form>
+```

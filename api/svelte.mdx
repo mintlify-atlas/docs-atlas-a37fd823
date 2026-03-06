@@ -1,0 +1,261 @@
+---
+title: '@shizen-ui/svelte'
+description: 'Svelte component library for Shizen UI'
+---
+
+## Overview
+
+The `@shizen-ui/svelte` package provides a collection of accessible, customizable UI components built for Svelte 5. All components are built with TypeScript and leverage the `@shizen-ui/styles` package for styling.
+
+## Installation
+
+```bash
+npm install @shizen-ui/svelte
+```
+
+## Package Information
+
+<ResponseField name="version" type="string" default="0.0.1">
+  Current package version
+</ResponseField>
+
+<ResponseField name="peerDependencies" type="object">
+  <ParamField name="svelte" type="string" default="^5.0.0">
+    Requires Svelte 5.0.0 or higher
+  </ParamField>
+</ResponseField>
+
+<ResponseField name="dependencies" type="object">
+  <ParamField name="@shizen-ui/styles" type="string" default="workspace:*">
+    Styling utilities and variant definitions
+  </ParamField>
+</ResponseField>
+
+## Package Exports
+
+The package provides multiple export paths for flexible imports:
+
+### Main Export
+
+```typescript
+import { Button, Input, Checkbox } from '@shizen-ui/svelte';
+```
+
+### Component-Specific Exports
+
+```typescript
+import Button from '@shizen-ui/svelte/components/Button.svelte';
+import Input from '@shizen-ui/svelte/components/Input.svelte';
+```
+
+## Components
+
+All components are exported from the main entry point at `packages/svelte/src/index.ts`:
+
+### Form Components
+
+<ResponseField name="Button" type="component">
+  Primary button component with variants, sizes, and icon support
+  
+  **Source:** `packages/svelte/src/components/button/index.ts`
+</ResponseField>
+
+<ResponseField name="ButtonGroup" type="component">
+  Groups multiple buttons with shared styling
+  
+  **Source:** `packages/svelte/src/components/button-group/index.ts`
+  
+  **Exports:**
+  - `ButtonGroup` (default component)
+  - `BUTTON_GROUP_CONTEXT_KEY`
+  - `ButtonGroupContextValue` (type)
+</ResponseField>
+
+<ResponseField name="Input" type="component">
+  Text input component with size variants
+  
+  **Source:** `packages/svelte/src/components/input/index.ts`
+</ResponseField>
+
+<ResponseField name="TextArea" type="component">
+  Multi-line text input component
+  
+  **Source:** `packages/svelte/src/components/text-area/index.ts`
+</ResponseField>
+
+<ResponseField name="InputGroup" type="component">
+  Composite component for inputs with prefix/suffix elements
+  
+  **Source:** `packages/svelte/src/components/input-group/index.ts`
+  
+  **Sub-components:**
+  - `InputGroup.Input`
+  - `InputGroup.TextArea`
+  - `InputGroup.Prefix`
+  - `InputGroup.Suffix`
+  
+  **Exports:**
+  - `InputGroupContextValue` (type)
+  - `INPUT_GROUP_CONTEXT_KEY`
+  - `useInputGroupContext()`
+</ResponseField>
+
+<ResponseField name="Checkbox" type="component">
+  Checkbox component with compound pattern
+  
+  **Source:** `packages/svelte/src/components/checkbox/index.ts`
+  
+  **Sub-components:**
+  - `Checkbox.Control`
+  - `Checkbox.Indicator`
+  - `Checkbox.Content`
+  
+  **Exports:**
+  - `CheckboxRoot`
+  - `CheckboxCheckedState` (type)
+</ResponseField>
+
+<ResponseField name="CheckboxGroup" type="component">
+  Groups multiple checkboxes
+  
+  **Source:** `packages/svelte/src/components/checkbox-group/index.ts`
+  
+  **Sub-components:**
+  - `CheckboxGroup.Items`
+  - `CheckboxGroup.Item`
+  - `CheckboxGroup.Checkbox`
+  
+  **Exports:**
+  - `CheckboxGroupRoot`
+  - `CheckboxOrientation` (type)
+</ResponseField>
+
+<ResponseField name="Radio" type="component">
+  Radio button component with compound pattern
+  
+  **Source:** `packages/svelte/src/components/radio/index.ts`
+  
+  **Sub-components:**
+  - `Radio.Control`
+  - `Radio.Indicator`
+  - `Radio.Content`
+  
+  **Exports:**
+  - `RadioRoot`
+</ResponseField>
+
+<ResponseField name="RadioGroup" type="component">
+  Groups multiple radio buttons
+  
+  **Source:** `packages/svelte/src/components/radio-group/index.ts`
+  
+  **Sub-components:**
+  - `RadioGroup.Items`
+  
+  **Exports:**
+  - `RadioGroupRoot`
+  - `RadioOrientation` (type)
+</ResponseField>
+
+<ResponseField name="TextField" type="component">
+  Complete text field with label, input, and validation
+  
+  **Source:** `packages/svelte/src/components/text-field/index.ts`
+</ResponseField>
+
+### Form Support Components
+
+<ResponseField name="Label" type="component">
+  Label component for form fields
+  
+  **Source:** `packages/svelte/src/components/label/index.ts`
+</ResponseField>
+
+<ResponseField name="Description" type="component">
+  Helper text component for form fields
+  
+  **Source:** `packages/svelte/src/components/description/index.ts`
+</ResponseField>
+
+<ResponseField name="FieldError" type="component">
+  Error message component for form validation
+  
+  **Source:** `packages/svelte/src/components/field-error/index.ts`
+</ResponseField>
+
+## Button Component Example
+
+The Button component demonstrates the typical structure of Shizen UI components:
+
+```typescript
+interface BaseProps extends HTMLButtonAttributes {
+  variant?: ButtonVariants["variant"];
+  size?: ButtonVariants["size"];
+}
+
+interface NormalProps extends BaseProps {
+  iconOnly?: false;
+  children?: Snippet;
+  startContent?: IconContent;
+  endContent?: IconContent;
+}
+
+interface IconOnlyProps extends BaseProps {
+  iconOnly: true;
+  children: Snippet;
+  startContent?: never;
+  endContent?: never;
+}
+
+type Props = NormalProps | IconOnlyProps;
+```
+
+### Key Features
+
+- **Type-safe variants** using `tailwind-variants`
+- **Svelte 5 runes** (`$props()`, `$derived()`)
+- **Context integration** with ButtonGroup
+- **Flexible content** with Svelte snippets
+- **Icon support** via `startContent`/`endContent` or `iconOnly`
+
+## TypeScript Support
+
+All components are written in TypeScript with full type definitions:
+
+```typescript
+import type { ButtonVariants } from '@shizen-ui/styles';
+import type { HTMLButtonAttributes } from 'svelte/elements';
+import type { Snippet } from 'svelte';
+```
+
+## Usage Example
+
+```svelte
+<script>
+  import { Button, ButtonGroup, Input, Checkbox } from '@shizen-ui/svelte';
+</script>
+
+<ButtonGroup variant="primary" size="md">
+  <Button>First</Button>
+  <Button>Second</Button>
+  <Button>Third</Button>
+</ButtonGroup>
+
+<Input size="md" placeholder="Enter text..." />
+
+<Checkbox>
+  <Checkbox.Control>
+    <Checkbox.Indicator />
+  </Checkbox.Control>
+  <Checkbox.Content>Accept terms</Checkbox.Content>
+</Checkbox>
+```
+
+## Component Architecture
+
+Shizen UI components follow these patterns:
+
+1. **Compound Components**: Complex components like `Checkbox` and `Radio` use sub-components for flexible composition
+2. **Context API**: Components like `ButtonGroup` and `InputGroup` provide context to children
+3. **Style Variants**: All components use `tailwind-variants` for type-safe styling
+4. **HTML Attributes**: Components extend native HTML element types for full attribute support

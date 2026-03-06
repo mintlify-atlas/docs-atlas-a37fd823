@@ -1,0 +1,389 @@
+---
+title: Text Field
+description: A comprehensive form field container that manages labels, inputs, descriptions, and error states with automatic accessibility.
+---
+
+## Overview
+
+The TextField component is a high-level container that orchestrates a complete form field experience. It manages the relationships between labels, inputs, descriptions, and error messages, automatically handling all ARIA attributes, validation states, and accessibility requirements. Use TextField to create professional, accessible form fields with minimal effort.
+
+## Installation
+
+```bash
+npm install @shizen-ui/svelte
+```
+
+## Import
+
+```typescript
+import { TextField, Label, Input, Description, FieldError } from '@shizen-ui/svelte';
+```
+
+## Basic Usage
+
+<CodeGroup>
+```svelte Simple Field
+<script>
+  import { TextField, Label, Input } from '@shizen-ui/svelte';
+  
+  let email = $state('');
+</script>
+
+<TextField>
+  <Label>Email</Label>
+  <Input type="email" bind:value={email} placeholder="you@example.com" />
+</TextField>
+```
+
+```svelte With Description
+<script>
+  import { TextField, Label, Input, Description } from '@shizen-ui/svelte';
+  
+  let username = $state('');
+</script>
+
+<TextField>
+  <Label>Username</Label>
+  <Input bind:value={username} placeholder="johndoe" />
+  <Description>Choose a unique username for your account.</Description>
+</TextField>
+```
+</CodeGroup>
+
+## Props
+
+<ParamField path="invalid" type="boolean" default={false}>
+  When true, applies error state styling and links the FieldError to the input via ARIA attributes.
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default={false}>
+  When true, disables all inputs within the field and applies disabled styling.
+</ParamField>
+
+<ParamField path="required" type="boolean" default={false}>
+  When true, marks the field as required. Typically used with Label to display a required indicator.
+</ParamField>
+
+<ParamField path="fullWidth" type="boolean" default={false}>
+  When true, the field takes up the full width of its container.
+</ParamField>
+
+<ParamField path="id" type="string">
+  Custom field ID. If not provided, a unique ID is automatically generated. This ID is used for label association and ARIA relationships.
+</ParamField>
+
+<ParamField path="class" type="string">
+  Additional CSS classes to apply to the field container.
+</ParamField>
+
+## Child Components
+
+The TextField is designed to work with these companion components:
+
+- **Label** - Field label that automatically associates with the input
+- **Input** - Single-line text input
+- **TextArea** - Multi-line text input
+- **InputGroup** - Enhanced input with prefix/suffix
+- **Description** - Helper text below the input
+- **FieldError** - Error message displayed when `invalid={true}`
+
+## Advanced Examples
+
+### With Validation
+
+```svelte
+<script>
+  import { TextField, Label, Input, Description, FieldError } from '@shizen-ui/svelte';
+  
+  let email = $state('');
+  let invalid = $state(false);
+  
+  function validateEmail() {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    invalid = !emailRegex.test(email);
+  }
+</script>
+
+<TextField {invalid}>
+  <Label>Email Address</Label>
+  <Input 
+    type="email" 
+    bind:value={email} 
+    onblur={validateEmail}
+    placeholder="you@example.com" 
+  />
+  <Description>We'll never share your email with anyone else.</Description>
+  {#if invalid}
+    <FieldError>Please enter a valid email address.</FieldError>
+  {/if}
+</TextField>
+```
+
+### Required Field
+
+```svelte
+<script>
+  import { TextField, Label, Input } from '@shizen-ui/svelte';
+  
+  let name = $state('');
+</script>
+
+<TextField required>
+  <Label>Full Name</Label>
+  <Input bind:value={name} required placeholder="John Doe" />
+</TextField>
+```
+
+### Disabled Field
+
+```svelte
+<TextField disabled>
+  <Label>Account ID</Label>
+  <Input value="ACC-123456" />
+  <Description>This field cannot be edited.</Description>
+</TextField>
+```
+
+### Full Width Field
+
+```svelte
+<TextField fullWidth>
+  <Label>Message</Label>
+  <TextArea rows={5} placeholder="Enter your message..." />
+</TextField>
+```
+
+### With TextArea
+
+```svelte
+<script>
+  import { TextField, Label, TextArea, Description } from '@shizen-ui/svelte';
+  
+  let bio = $state('');
+  let charCount = $derived(bio.length);
+</script>
+
+<TextField fullWidth>
+  <Label>Biography</Label>
+  <TextArea bind:value={bio} rows={6} maxlength={500} />
+  <Description>{charCount}/500 characters</Description>
+</TextField>
+```
+
+### With InputGroup
+
+```svelte
+<script>
+  import { TextField, Label, Input, InputGroup, Description } from '@shizen-ui/svelte';
+  
+  let username = $state('');
+  let invalid = $state(false);
+  
+  function validate() {
+    invalid = username.length < 3;
+  }
+</script>
+
+<TextField {invalid}>
+  <Label>Username</Label>
+  <InputGroup>
+    {#snippet prefix()}
+      <span>@</span>
+    {/snippet}
+    <Input bind:value={username} onblur={validate} placeholder="username" />
+  </InputGroup>
+  <Description>Your unique identifier on the platform.</Description>
+  {#if invalid}
+    <FieldError>Username must be at least 3 characters.</FieldError>
+  {/if}
+</TextField>
+```
+
+### Password Field with Validation
+
+```svelte
+<script>
+  import { TextField, Label, Input, FieldError } from '@shizen-ui/svelte';
+  
+  let password = $state('');
+  let errors = $state<string[]>([]);
+  
+  function validatePassword() {
+    errors = [];
+    if (password.length < 8) errors.push('At least 8 characters');
+    if (!/[A-Z]/.test(password)) errors.push('One uppercase letter');
+    if (!/[a-z]/.test(password)) errors.push('One lowercase letter');
+    if (!/[0-9]/.test(password)) errors.push('One number');
+  }
+</script>
+
+<TextField invalid={errors.length > 0}>
+  <Label>Password</Label>
+  <Input 
+    type="password" 
+    bind:value={password}
+    oninput={validatePassword}
+    placeholder="Enter password" 
+  />
+  {#if errors.length > 0}
+    <FieldError>
+      Password must contain:
+      <ul class="list-disc list-inside mt-1">
+        {#each errors as error}
+          <li>{error}</li>
+        {/each}
+      </ul>
+    </FieldError>
+  {/if}
+</TextField>
+```
+
+### Complex Form Example
+
+```svelte
+<script>
+  import { TextField, Label, Input, TextArea, Description, FieldError, Button } from '@shizen-ui/svelte';
+  
+  let formData = $state({
+    name: '',
+    email: '',
+    bio: ''
+  });
+  
+  let errors = $state({
+    name: false,
+    email: false,
+    bio: false
+  });
+  
+  function validateName() {
+    errors.name = formData.name.length < 2;
+  }
+  
+  function validateEmail() {
+    errors.email = !formData.email.includes('@');
+  }
+  
+  function validateBio() {
+    errors.bio = formData.bio.length > 500;
+  }
+  
+  function handleSubmit() {
+    validateName();
+    validateEmail();
+    validateBio();
+    
+    if (!errors.name && !errors.email && !errors.bio) {
+      console.log('Form submitted:', formData);
+    }
+  }
+</script>
+
+<form class="space-y-4" onsubmit|preventDefault={handleSubmit}>
+  <TextField invalid={errors.name} required fullWidth>
+    <Label>Full Name</Label>
+    <Input 
+      bind:value={formData.name}
+      onblur={validateName}
+      placeholder="John Doe" 
+    />
+    {#if errors.name}
+      <FieldError>Name must be at least 2 characters.</FieldError>
+    {/if}
+  </TextField>
+  
+  <TextField invalid={errors.email} required fullWidth>
+    <Label>Email</Label>
+    <Input 
+      type="email"
+      bind:value={formData.email}
+      onblur={validateEmail}
+      placeholder="john@example.com" 
+    />
+    {#if errors.email}
+      <FieldError>Please enter a valid email address.</FieldError>
+    {/if}
+  </TextField>
+  
+  <TextField invalid={errors.bio} fullWidth>
+    <Label>Biography</Label>
+    <TextArea 
+      bind:value={formData.bio}
+      oninput={validateBio}
+      rows={5}
+      maxlength={500}
+    />
+    <Description>{formData.bio.length}/500 characters</Description>
+    {#if errors.bio}
+      <FieldError>Biography cannot exceed 500 characters.</FieldError>
+    {/if}
+  </TextField>
+  
+  <Button type="submit">Submit</Button>
+</form>
+```
+
+## Context Management
+
+The TextField uses Svelte context to automatically provide these values to all child components:
+
+- `id` - Unique field identifier for label and ARIA associations
+- `invalid` - Validation state
+- `disabled` - Disabled state
+- `required` - Required state
+
+Child components (Input, TextArea, Label, etc.) automatically consume this context and configure themselves accordingly. This eliminates the need to manually wire up IDs and ARIA attributes.
+
+## Accessibility
+
+### Automatic ARIA Management
+
+The TextField automatically handles:
+
+- **Label Association**: The Label component uses the field's ID to associate with the input via `for` attribute
+- **Descriptions**: Description components are linked via `aria-describedby`
+- **Error Messages**: FieldError components are linked via `aria-errormessage` when `invalid={true}`
+- **Validation State**: `aria-invalid` is automatically set on inputs based on the `invalid` prop
+- **Required State**: Propagated to child inputs for proper form validation
+
+### Best Practices
+
+- Always include a Label for every TextField
+- Use Description for helpful hints and instructions
+- Show FieldError only when `invalid={true}`
+- Set `required={true}` for mandatory fields
+- Ensure error messages are clear and actionable
+
+```svelte
+<TextField invalid={hasError} required>
+  <Label>Email</Label> <!-- Always include -->
+  <Input type="email" bind:value={email} />
+  <Description>We'll send a verification email</Description> <!-- Optional helpful text -->
+  {#if hasError}
+    <FieldError>Email is required and must be valid</FieldError> <!-- Clear, actionable -->
+  {/if}
+</TextField>
+```
+
+## Styling
+
+- Uses `data-invalid` attribute for error state styling
+- Uses `data-disabled` attribute for disabled state styling
+- The `fullWidth` variant applies `text-field--full-width` class
+- Automatically manages visual hierarchy for label, input, description, and error
+- Fully customizable with the `class` prop
+
+<Tip>
+  The TextField component is the recommended way to build forms in Shizen UI. It automatically handles all the complex accessibility requirements, validation states, and component relationships, allowing you to focus on your form logic rather than boilerplate ARIA attributes.
+</Tip>
+
+## Usage Tips
+
+- Use TextField as the wrapper for all form inputs
+- Always include a Label, even for simple fields
+- Use Description for helpful, non-critical information
+- Reserve FieldError for validation messages shown only when `invalid={true}`
+- Set `fullWidth` on TextArea fields for better UX
+- The `required` prop works with native HTML5 form validation
+- Generate unique IDs automatically by not setting the `id` prop
+- Group related fields in a `<fieldset>` with a `<legend>` for complex forms

@@ -1,0 +1,226 @@
+---
+title: "Description"
+description: "Helper text component for providing additional context and guidance for form fields"
+---
+
+## Overview
+
+The Description component displays supplementary text to help users understand what input is expected in a form field. It automatically hides when a field is invalid (unless configured otherwise) and integrates seamlessly with the field context system.
+
+## Import
+
+```svelte
+import { Description } from '@shizen-ui/svelte';
+```
+
+## Basic Usage
+
+```svelte
+<Label for="username">Username</Label>
+<Input id="username" />
+<Description>Must be 3-20 characters long</Description>
+```
+
+## With TextField Context
+
+When used within a TextField, Description automatically manages its visibility based on validation state:
+
+```svelte
+<TextField invalid={hasError}>
+  <Label>Password</Label>
+  <Input type="password" />
+  <Description>Must contain at least 8 characters</Description>
+  <FieldError>Password is too weak</FieldError>
+</TextField>
+```
+
+<Note>
+  By default, Description hides when the field is invalid, allowing FieldError to display instead. Checkbox components override this behavior to show both.
+</Note>
+
+## Props
+
+<ParamField path="children" type="Snippet" required>
+  The descriptive text content to display
+</ParamField>
+
+<ParamField path="id" type="string">
+  HTML id attribute for the description element. Automatically generated as `{fieldId}-description` when used within a TextField context.
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default="false">
+  Whether the description should appear disabled. Automatically inherited from TextField context.
+</ParamField>
+
+<ParamField path="class" type="string">
+  Additional CSS classes to apply to the description paragraph
+</ParamField>
+
+## Examples
+
+### Basic Form Field
+
+```svelte
+<Label for="email">Email Address</Label>
+<Input id="email" type="email" />
+<Description>We'll never share your email with anyone else</Description>
+```
+
+### With Validation
+
+```svelte
+<script>
+  let email = '';
+  let isInvalid = false;
+  
+  function validateEmail() {
+    isInvalid = !email.includes('@');
+  }
+</script>
+
+<TextField invalid={isInvalid}>
+  <Label>Email</Label>
+  <Input bind:value={email} on:blur={validateEmail} />
+  <Description>Enter a valid email address</Description>
+  <FieldError>Please include an @ symbol in the email</FieldError>
+</TextField>
+```
+
+### With Checkbox (Always Visible)
+
+```svelte
+<Checkbox>
+  <CheckboxIndicator />
+  <Label>Send me marketing emails</Label>
+  <Description>We'll send you updates about new features and promotions</Description>
+</Checkbox>
+```
+
+<Tip>
+  Checkbox components set `keepDescription: true` in their field context, ensuring the Description remains visible even when invalid.
+</Tip>
+
+### Multiple Descriptions
+
+```svelte
+<TextField>
+  <Label>API Key</Label>
+  <Input type="password" />
+  <Description>Found in your account settings under "Developer Tools"</Description>
+  <Description>Keep this key secret and never commit it to version control</Description>
+</TextField>
+```
+
+### Disabled State
+
+```svelte
+<TextField disabled={true}>
+  <Label>Account Type</Label>
+  <Input value="Premium" readonly />
+  <Description>Contact support to change your account type</Description>
+</TextField>
+```
+
+## Styling and Customization
+
+The Description component uses the `descriptionStyles` variant from `@shizen-ui/styles`:
+
+```svelte
+<Description class="text-sm text-gray-500 italic">
+  Custom styled description text
+</Description>
+```
+
+### Data Attributes
+
+The component exposes these data attributes for CSS targeting:
+
+- `data-slot="description"`: Identifies this as a description element
+- `data-disabled`: Present when the field is disabled
+- `data-invalid`: Present when the field is invalid
+
+```css
+[data-slot="description"][data-disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+[data-slot="description"][data-invalid] {
+  color: #dc2626;
+}
+```
+
+## Visibility Logic
+
+The Description component implements smart visibility logic:
+
+```svelte
+const shouldShow = $derived(
+  !finalInvalid || (fieldContext.exists && fieldContext.keepDescription)
+);
+```
+
+This means:
+- Always visible when field is valid
+- Hidden when field is invalid (to make room for error message)
+- Always visible in Checkboxes (even when invalid) due to `keepDescription` flag
+
+## Accessibility
+
+<Tip>
+  Description components are automatically linked to their associated form controls via `aria-describedby`.
+</Tip>
+
+### ARIA Integration
+
+When a Description is used with an Input in a TextField context:
+
+```html
+<!-- Input automatically gets aria-describedby -->
+<input 
+  id="field-abc123" 
+  aria-describedby="field-abc123-description"
+/>
+<p id="field-abc123-description" data-slot="description">
+  Your helpful description text
+</p>
+```
+
+This ensures screen readers announce the description when the input receives focus.
+
+### Best Practices
+
+- Keep descriptions concise and clear (under 100 characters)
+- Provide actionable guidance, not just repetition of the label
+- Use descriptions for:
+  - Format requirements (e.g., "MM/DD/YYYY")
+  - Character limits (e.g., "Maximum 280 characters")
+  - Privacy information (e.g., "This information is kept private")
+  - Examples (e.g., "Example: +1 (555) 123-4567")
+
+## Field Context Integration
+
+The Description component uses `useFieldStateContext` to integrate with parent field components:
+
+```typescript
+const fieldContext = useFieldStateContext();
+
+const finalInvalid = fieldContext.exists ? fieldContext.invalid : false;
+const finalDisabled = fieldContext.exists ? fieldContext.disabled : disabled;
+const finalId = propId ?? 
+  (fieldContext.exists && fieldContext.id ? `${fieldContext.id}-description` : undefined);
+```
+
+This automatic integration means:
+- IDs are generated consistently
+- State is inherited from parent containers
+- No manual wiring required for most use cases
+
+## Related Components
+
+- [Label](/components/label) - Form field label with required indicator
+- [FieldError](/components/field-error) - Validation error messages
+- [TextField](/components/text-field) - Complete form field container
+- [Input](/components/input) - Text input component
+- [Checkbox](/components/checkbox) - Checkbox with description support
+- [Radio](/components/radio) - Radio button with description support

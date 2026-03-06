@@ -1,0 +1,277 @@
+---
+title: Button
+description: A versatile button component with multiple variants, sizes, and icon support for triggering actions.
+---
+
+## Overview
+
+The Button component is a fundamental interactive element that triggers actions when clicked. It supports multiple visual variants, sizes, icon placement, and icon-only modes, making it suitable for a wide range of use cases from primary actions to subtle tertiary interactions.
+
+## Installation
+
+```bash
+npm install @shizen-ui/svelte
+```
+
+## Import
+
+```typescript
+import { Button } from '@shizen-ui/svelte';
+```
+
+## Basic Usage
+
+<CodeGroup>
+```svelte Default Button
+<script>
+  import { Button } from '@shizen-ui/svelte';
+</script>
+
+<Button>Click me</Button>
+```
+
+```svelte With Click Handler
+<script>
+  import { Button } from '@shizen-ui/svelte';
+  
+  function handleClick() {
+    console.log('Button clicked!');
+  }
+</script>
+
+<Button onclick={handleClick}>Submit</Button>
+```
+</CodeGroup>
+
+## Props
+
+<ParamField path="variant" type="string" default="primary">
+  The visual style variant of the button.
+  
+  Options: `"primary"` | `"secondary"` | `"tertiary"` | `"danger"` | `"ghost"` | `"outline"` | `"soft-danger"`
+</ParamField>
+
+<ParamField path="size" type="string" default="md">
+  The size of the button.
+  
+  Options: `"sm"` | `"md"` | `"lg"`
+</ParamField>
+
+<ParamField path="iconOnly" type="boolean" default={false}>
+  When true, renders the button as an icon-only button with square proportions. The children slot should contain only an icon.
+</ParamField>
+
+<ParamField path="startContent" type="Snippet | string">
+  Content to display at the start of the button (before text). Can be a Svelte snippet or an icon class string.
+</ParamField>
+
+<ParamField path="endContent" type="Snippet | string">
+  Content to display at the end of the button (after text). Can be a Svelte snippet or an icon class string.
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default={false}>
+  When true, disables the button interaction.
+</ParamField>
+
+<ParamField path="type" type="string" default="button">
+  The HTML button type attribute.
+  
+  Options: `"button"` | `"submit"` | `"reset"`
+</ParamField>
+
+<ParamField path="class" type="string">
+  Additional CSS classes to apply to the button.
+</ParamField>
+
+<ParamField path="onclick" type="function">
+  Click event handler function.
+</ParamField>
+
+## Variants
+
+### Button Variants
+
+The Button component offers 7 distinct visual variants:
+
+<CodeGroup>
+```svelte Primary
+<Button variant="primary">Primary</Button>
+```
+
+```svelte Secondary
+<Button variant="secondary">Secondary</Button>
+```
+
+```svelte Tertiary
+<Button variant="tertiary">Tertiary</Button>
+```
+
+```svelte Danger
+<Button variant="danger">Danger</Button>
+```
+
+```svelte Soft Danger
+<Button variant="soft-danger">Soft Danger</Button>
+```
+
+```svelte Ghost
+<Button variant="ghost">Ghost</Button>
+```
+
+```svelte Outline
+<Button variant="outline">Outline</Button>
+```
+</CodeGroup>
+
+### Sizes
+
+<CodeGroup>
+```svelte Small
+<Button size="sm">Small Button</Button>
+```
+
+```svelte Medium
+<Button size="md">Medium Button</Button>
+```
+
+```svelte Large
+<Button size="lg">Large Button</Button>
+```
+</CodeGroup>
+
+## Advanced Examples
+
+### With Icons
+
+<CodeGroup>
+```svelte Icon Class String
+<script>
+  import { Button } from '@shizen-ui/svelte';
+</script>
+
+<Button startContent="i-lucide-plus">Add Item</Button>
+<Button endContent="i-lucide-arrow-right">Next</Button>
+```
+
+```svelte Icon Snippet
+<script>
+  import { Button } from '@shizen-ui/svelte';
+</script>
+
+<Button>
+  {#snippet startContent()}
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+      <path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="2" />
+    </svg>
+  {/snippet}
+  Add Item
+</Button>
+```
+</CodeGroup>
+
+### Icon-Only Button
+
+<CodeGroup>
+```svelte Icon Only
+<Button iconOnly>
+  <i class="i-lucide-settings"></i>
+</Button>
+```
+
+```svelte Different Sizes
+<Button iconOnly size="sm">
+  <i class="i-lucide-edit"></i>
+</Button>
+
+<Button iconOnly size="md">
+  <i class="i-lucide-edit"></i>
+</Button>
+
+<Button iconOnly size="lg">
+  <i class="i-lucide-edit"></i>
+</Button>
+```
+</CodeGroup>
+
+<Note>
+  When using `iconOnly`, the `startContent` and `endContent` props are not available. Place your icon content directly in the children slot.
+</Note>
+
+### Disabled State
+
+```svelte
+<Button disabled>Disabled Button</Button>
+<Button variant="secondary" disabled>Disabled Secondary</Button>
+```
+
+### Button Types
+
+```svelte
+<form>
+  <Button type="submit" variant="primary">Submit Form</Button>
+  <Button type="reset" variant="secondary">Reset Form</Button>
+  <Button type="button" variant="tertiary">Cancel</Button>
+</form>
+```
+
+### Loading State
+
+```svelte
+<script>
+  import { Button } from '@shizen-ui/svelte';
+  
+  let loading = $state(false);
+  
+  async function handleSubmit() {
+    loading = true;
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    loading = false;
+  }
+</script>
+
+<Button onclick={handleSubmit} disabled={loading}>
+  {#snippet startContent()}
+    {#if loading}
+      <i class="i-lucide-loader-2 animate-spin"></i>
+    {:else}
+      <i class="i-lucide-check"></i>
+    {/if}
+  {/snippet}
+  {loading ? 'Saving...' : 'Save'}
+</Button>
+```
+
+## Accessibility
+
+- Uses semantic `<button>` element
+- Supports keyboard navigation (Enter and Space to activate)
+- Properly handles `disabled` state with the `disabled` attribute
+- When used in a ButtonGroup, the group context automatically manages variant and size
+- Ensure button text clearly describes the action being performed
+- For icon-only buttons, consider adding `aria-label` for screen readers:
+
+```svelte
+<Button iconOnly aria-label="Settings">
+  <i class="i-lucide-settings"></i>
+</Button>
+```
+
+## Usage with ButtonGroup
+
+When a Button is placed inside a ButtonGroup, it automatically inherits the group's `variant`, `size`, and `disabled` props unless explicitly overridden:
+
+```svelte
+<script>
+  import { Button, ButtonGroup } from '@shizen-ui/svelte';
+</script>
+
+<ButtonGroup variant="secondary" size="sm">
+  <Button>First</Button>
+  <Button>Second</Button>
+  <Button variant="primary">Override</Button>
+</ButtonGroup>
+```
+
+<Tip>
+  The Button component automatically detects when it's inside a ButtonGroup and inherits the group's styling props, reducing repetition in your code.
+</Tip>

@@ -1,0 +1,424 @@
+---
+title: Theming
+description: Customize Shizen UI's appearance with Tailwind CSS v4 themes and CSS custom properties
+---
+
+## Overview
+
+Shizen UI's theming system is built on **Tailwind CSS v4** and uses CSS custom properties for maximum flexibility. The theme system supports light and dark modes out of the box and allows for complete customization.
+
+## Theme Architecture
+
+### CSS Custom Properties
+
+Shizen UI uses CSS custom properties (CSS variables) for all theme values:
+
+```css
+@layer base {
+  :root,
+  .light,
+  .default,
+  [data-theme="light"],
+  [data-theme="default"] {
+    /* Dimensions scale */
+    --spacing: 0.25rem;
+    --radius: 0.25rem;
+    --padding: 0.25rem;
+    
+    /* Base Colors */
+    --background: #f5f5f5;
+    --surface: var(--white);
+    --overlay: var(--white);
+    --separator: #e4e4e7;
+    --focus: var(--accent);
+    
+    /* Text Colors */
+    --primary-text: var(--eclipse);
+    --secondary-text: #5b616d;
+    --tertiary-text: #a3a7af;
+    --inverted-text: var(--snow);
+    
+    /* Semantic Colors */
+    --accent: #007aff;
+    --accent-foreground: var(--inverted-text);
+    --danger: #ff3b30;
+    --danger-foreground: var(--inverted-text);
+    --success: #22c55e;
+    --warning: #facc15;
+  }
+}
+```
+
+### Tailwind Theme Integration
+
+The CSS variables are made available to Tailwind using the `@theme` directive:
+
+```css
+@theme inline {
+  /* Color tokens */
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-danger: var(--danger);
+  --color-danger-foreground: var(--danger-foreground);
+  
+  /* Computed colors using color-mix */
+  --color-accent-hover: color-mix(
+    in oklab,
+    var(--color-accent) 90%,
+    var(--color-accent-foreground) 10%
+  );
+  
+  --color-danger-hover: color-mix(
+    in oklab,
+    var(--color-danger) 90%,
+    var(--color-danger-foreground) 10%
+  );
+}
+```
+
+## Color System
+
+### Primitive Colors
+
+Primitive colors remain constant across themes:
+
+```css
+/* Primitive Colors (Do not change between light and dark) */
+--white: #ffffff;
+--black: #000000;
+--snow: #fcfcfc;
+--eclipse: #18181b;
+```
+
+### Semantic Colors
+
+Semantic colors represent purpose rather than specific values:
+
+<CodeGroup>
+
+```css Text Colors
+--primary-text: var(--eclipse);    /* Primary content */
+--secondary-text: #5b616d;          /* Secondary content */
+--tertiary-text: #a3a7af;           /* Tertiary content */
+--inverted-text: var(--snow);       /* Text on dark backgrounds */
+```
+
+```css Surface Colors
+--background: #f5f5f5;  /* Page background */
+--surface: var(--white); /* Card and panel surfaces */
+--overlay: var(--white); /* Modal and dropdown overlays */
+--separator: #e4e4e7;    /* Borders and dividers */
+```
+
+```css Interactive Colors
+--accent: #007aff;                      /* Primary actions */
+--accent-foreground: var(--inverted-text);
+
+--control: #eaecef;                     /* Buttons and controls */
+--control-foreground: var(--secondary-text);
+
+--field: var(--control);                /* Input fields */
+--field-foreground: var(--primary-text);
+--field-placeholder: var(--tertiary-text);
+```
+
+```css Status Colors
+--success: #22c55e;  /* Success states */
+--warning: #facc15;  /* Warning states */
+--danger: #ff3b30;   /* Error states and destructive actions */
+--danger-foreground: var(--inverted-text);
+```
+
+</CodeGroup>
+
+### Dynamic Color Computation
+
+Shizen UI uses CSS `color-mix()` for dynamic hover states:
+
+```css
+--color-accent-hover: color-mix(
+  in oklab,
+  var(--color-accent) 90%,
+  var(--color-accent-foreground) 10%
+);
+
+--color-control-hover: color-mix(
+  in oklab,
+  var(--color-control) 94%,
+  var(--color-control-foreground) 6%
+);
+
+--color-ghost-hover: color-mix(
+  in oklab,
+  var(--color-control-foreground) 8%,
+  transparent
+);
+```
+
+This approach ensures hover states are always properly contrasted.
+
+## Design Tokens
+
+### Spacing Scale
+
+The spacing system uses a base unit that scales consistently:
+
+```css
+:root {
+  --spacing: 0.25rem; /* 4px base unit */
+}
+
+@theme inline {
+  /* Control sizing */
+  --spacing-control-sm: calc(var(--spacing) * 8);  /* 32px */
+  --spacing-control-md: calc(var(--spacing) * 9);  /* 36px */
+  --spacing-control-lg: calc(var(--spacing) * 10); /* 40px */
+  
+  /* Field sizing */
+  --spacing-field-sm: calc(var(--spacing) * 8);    /* 32px */
+  --spacing-field-md: calc(var(--spacing) * 9);    /* 36px */
+  --spacing-field-lg: calc(var(--spacing) * 10);   /* 40px */
+  
+  /* Field padding */
+  --padding-field-sm: calc(var(--padding) * 3);    /* 12px */
+  --padding-field-md: calc(var(--padding) * 3);    /* 12px */
+  --padding-field-lg: calc(var(--padding) * 3);    /* 12px */
+}
+```
+
+### Border Radius
+
+Border radius tokens for consistent rounded corners:
+
+```css
+:root {
+  --radius: 0.25rem; /* 4px base unit */
+}
+
+@theme inline {
+  --radius-control: calc(var(--radius) * 3); /* 12px */
+  --radius-field: calc(var(--radius) * 3);   /* 12px */
+}
+```
+
+Use these in Tailwind utilities:
+
+```tsx
+<Button className="rounded-control" />
+<Input className="rounded-field" />
+```
+
+### Interactive States
+
+```css
+:root {
+  --cursor-interactive: pointer;
+  --cursor-disabled: not-allowed;
+  --disabled-opacity: 0.5;
+}
+```
+
+## Creating Custom Themes
+
+### Method 1: CSS Variables
+
+Override CSS variables in your own stylesheet:
+
+```css
+/* custom-theme.css */
+:root {
+  /* Change accent color */
+  --accent: #8b5cf6;
+  --accent-foreground: #ffffff;
+  
+  /* Adjust spacing scale */
+  --spacing: 0.3rem;
+  
+  /* Customize border radius */
+  --radius: 0.5rem;
+}
+```
+
+### Method 2: Data Attributes
+
+Create theme variants using data attributes:
+
+```css
+[data-theme="purple"] {
+  --accent: #8b5cf6;
+  --accent-foreground: #ffffff;
+  --control: #f3f4f6;
+  --control-foreground: #6b7280;
+}
+
+[data-theme="green"] {
+  --accent: #22c55e;
+  --accent-foreground: #ffffff;
+  --control: #f0fdf4;
+  --control-foreground: #166534;
+}
+```
+
+Apply themes:
+
+```tsx
+<div data-theme="purple">
+  <Button>Purple Theme Button</Button>
+</div>
+```
+
+### Method 3: Class-Based Themes
+
+Define themes as classes:
+
+```css
+.theme-brand {
+  --accent: #ff6b35;
+  --accent-foreground: #ffffff;
+  --background: #fef3f2;
+  --surface: #ffffff;
+  --primary-text: #1f2937;
+}
+```
+
+Apply to your app:
+
+```tsx
+function App() {
+  return (
+    <div className="theme-brand">
+      {/* Your app content */}
+    </div>
+  );
+}
+```
+
+## Dark Mode Support
+
+<Note>
+Dark mode implementation will be available in a future release. The theming system is designed to support it through the same CSS variable approach.
+</Note>
+
+Example dark mode implementation:
+
+```css
+.dark,
+[data-theme="dark"] {
+  --background: #18181b;
+  --surface: #27272a;
+  --overlay: #3f3f46;
+  --separator: #3f3f46;
+  
+  --primary-text: #fafafa;
+  --secondary-text: #a1a1aa;
+  --tertiary-text: #71717a;
+  --inverted-text: #18181b;
+  
+  --control: #3f3f46;
+  --control-foreground: #a1a1aa;
+  
+  --accent: #3b82f6;
+  --accent-foreground: #ffffff;
+}
+```
+
+## Using Theme Colors
+
+### In Components
+
+```tsx
+import { Button } from "@shizen-ui/react";
+
+function ThemedButton() {
+  return (
+    <Button className="bg-accent text-accent-foreground">
+      Accent Button
+    </Button>
+  );
+}
+```
+
+### In Custom CSS
+
+```css
+.custom-card {
+  background-color: var(--color-surface);
+  color: var(--color-primary-text);
+  border: 1px solid var(--color-separator);
+}
+
+.custom-card:hover {
+  background-color: var(--color-control-hover);
+}
+```
+
+### In Inline Styles
+
+```tsx
+function CustomComponent() {
+  return (
+    <div
+      style={{
+        backgroundColor: "var(--color-surface)",
+        color: "var(--color-primary-text)",
+        padding: "var(--spacing-control-md)",
+      }}
+    >
+      Themed content
+    </div>
+  );
+}
+```
+
+## Best Practices
+
+<AccordionGroup>
+
+<Accordion title="Use semantic color names">
+  Always use semantic names instead of specific colors:
+  
+  ```tsx
+  // Good
+  <div className="bg-surface text-primary-text" />
+  
+  // Bad
+  <div className="bg-white text-black" />
+  ```
+</Accordion>
+
+<Accordion title="Leverage computed colors">
+  Use the built-in hover colors for consistency:
+  
+  ```css
+  .button:hover {
+    background-color: var(--color-accent-hover);
+  }
+  ```
+</Accordion>
+
+<Accordion title="Test with different themes">
+  Always test your components with different theme configurations to ensure they work correctly.
+</Accordion>
+
+<Accordion title="Maintain color contrast">
+  Ensure sufficient contrast between foreground and background colors for accessibility:
+  
+  ```css
+  /* Always pair colors with their foreground variants */
+  --btn-bg: var(--color-accent);
+  --btn-fg: var(--color-accent-foreground);
+  ```
+</Accordion>
+
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Styling" icon="paintbrush" href="/concepts/styling">
+    Learn about the styling system and utilities
+  </Card>
+  <Card title="Variants" icon="code-branch" href="/concepts/variants">
+    Explore component variants and customization
+  </Card>
+</CardGroup>

@@ -1,0 +1,470 @@
+---
+title: 'tailwind-variants'
+description: 'Type-safe variant system for component styling'
+---
+
+## Overview
+
+Shizen UI uses `tailwind-variants` to create type-safe, composable component variants. This system provides a powerful API for defining base styles, variants, compound variants, and default values.
+
+## Installation
+
+`tailwind-variants` is included with `@shizen-ui/styles`:
+
+```bash
+npm install @shizen-ui/styles
+```
+
+## Core Concepts
+
+### tv Function
+
+The `tv` function creates variant definitions:
+
+```typescript
+import { tv, type VariantProps } from 'tailwind-variants';
+
+const styles = tv({
+  base: 'base-class',
+  variants: {
+    variant: {
+      primary: 'variant-primary',
+      secondary: 'variant-secondary'
+    },
+    size: {
+      sm: 'size-sm',
+      md: 'size-md',
+      lg: 'size-lg'
+    }
+  },
+  defaultVariants: {
+    variant: 'primary',
+    size: 'md'
+  }
+});
+```
+
+### VariantProps Type
+
+Extract type-safe props from variant definitions:
+
+```typescript
+type StyleVariants = VariantProps<typeof styles>;
+// => { variant?: 'primary' | 'secondary'; size?: 'sm' | 'md' | 'lg' }
+```
+
+## Button Styles Example
+
+Real implementation from Shizen UI:
+
+```typescript
+import { tv, type VariantProps } from "tailwind-variants";
+
+export const buttonStyles = tv({
+  base: "button",
+  variants: {
+    variant: {
+      primary: "button--primary",
+      secondary: "button--secondary",
+      tertiary: "button--tertiary",
+      danger: "button--danger",
+      ghost: "button--ghost",
+      outline: "button--outline",
+      "soft-danger": "button--soft-danger"
+    },
+    size: {
+      sm: "button--sm",
+      md: "button--md",
+      lg: "button--lg"
+    },
+    iconOnly: {
+      true: "button--icon-only"
+    }
+  },
+  compoundVariants: [
+    {
+      iconOnly: true,
+      size: "sm",
+      class: "button--icon-only--sm"
+    },
+    {
+      iconOnly: true,
+      size: "md",
+      class: "button--icon-only--md"
+    },
+    {
+      iconOnly: true,
+      size: "lg",
+      class: "button--icon-only--lg"
+    }
+  ],
+  defaultVariants: {
+    variant: "primary",
+    size: "md"
+  }
+});
+
+export type ButtonVariants = VariantProps<typeof buttonStyles>;
+```
+
+**Source:** `packages/styles/src/variants/button/button.styles.ts`
+
+### Usage
+
+```typescript
+import { buttonStyles } from '@shizen-ui/styles';
+
+// With defaults
+buttonStyles();
+// => "button button--primary button--md"
+
+// With specific variants
+buttonStyles({ variant: 'secondary', size: 'lg' });
+// => "button button--secondary button--lg"
+
+// With iconOnly (triggers compound variants)
+buttonStyles({ variant: 'primary', size: 'sm', iconOnly: true });
+// => "button button--primary button--sm button--icon-only button--icon-only--sm"
+```
+
+## Input Styles Example
+
+```typescript
+import { tv, type VariantProps } from "tailwind-variants";
+
+export const inputStyles = tv({
+  base: "input",
+  variants: {
+    size: {
+      sm: "input--sm",
+      md: "input--md",
+      lg: "input--lg"
+    }
+  },
+  defaultVariants: {
+    size: "md"
+  }
+});
+
+export type InputVariants = VariantProps<typeof inputStyles>;
+```
+
+**Source:** `packages/styles/src/variants/input/input.styles.ts`
+
+### Usage
+
+```typescript
+import { inputStyles } from '@shizen-ui/styles';
+
+inputStyles({ size: 'lg' });
+// => "input input--lg"
+```
+
+## Variant Configuration
+
+### Base Styles
+
+<ParamField name="base" type="string">
+  Base classes applied to all variants
+</ParamField>
+
+```typescript
+const styles = tv({
+  base: 'rounded-md transition-colors focus:outline-none'
+});
+```
+
+### Variants
+
+<ParamField name="variants" type="object">
+  Object defining variant groups and their options
+</ParamField>
+
+```typescript
+const styles = tv({
+  variants: {
+    color: {
+      red: 'bg-red-500',
+      blue: 'bg-blue-500',
+      green: 'bg-green-500'
+    },
+    size: {
+      sm: 'text-sm px-2 py-1',
+      md: 'text-base px-4 py-2',
+      lg: 'text-lg px-6 py-3'
+    },
+    rounded: {
+      true: 'rounded-full',
+      false: 'rounded-none'
+    }
+  }
+});
+```
+
+### Compound Variants
+
+<ParamField name="compoundVariants" type="array">
+  Styles applied when specific variant combinations are used
+</ParamField>
+
+```typescript
+const styles = tv({
+  variants: {
+    color: {
+      red: 'bg-red-500',
+      blue: 'bg-blue-500'
+    },
+    outlined: {
+      true: 'border-2'
+    }
+  },
+  compoundVariants: [
+    {
+      color: 'red',
+      outlined: true,
+      class: 'border-red-500 bg-transparent text-red-500'
+    },
+    {
+      color: 'blue',
+      outlined: true,
+      class: 'border-blue-500 bg-transparent text-blue-500'
+    }
+  ]
+});
+```
+
+### Default Variants
+
+<ParamField name="defaultVariants" type="object">
+  Default values for variant props
+</ParamField>
+
+```typescript
+const styles = tv({
+  variants: {
+    color: {
+      red: 'bg-red-500',
+      blue: 'bg-blue-500'
+    },
+    size: {
+      sm: 'text-sm',
+      md: 'text-base'
+    }
+  },
+  defaultVariants: {
+    color: 'blue',
+    size: 'md'
+  }
+});
+
+styles(); // Uses defaults: "bg-blue-500 text-base"
+```
+
+## Creating Custom Variants
+
+### Step 1: Define Variants
+
+```typescript
+import { tv, type VariantProps } from 'tailwind-variants';
+
+export const cardStyles = tv({
+  base: 'card rounded-lg shadow-sm',
+  variants: {
+    variant: {
+      default: 'bg-white border border-gray-200',
+      elevated: 'bg-white shadow-lg',
+      outlined: 'bg-transparent border-2 border-gray-300'
+    },
+    padding: {
+      none: 'p-0',
+      sm: 'p-4',
+      md: 'p-6',
+      lg: 'p-8'
+    },
+    hoverable: {
+      true: 'hover:shadow-md transition-shadow cursor-pointer'
+    }
+  },
+  defaultVariants: {
+    variant: 'default',
+    padding: 'md'
+  }
+});
+
+export type CardVariants = VariantProps<typeof cardStyles>;
+```
+
+### Step 2: Use in Component
+
+```svelte
+<script lang="ts">
+  import { cn } from '@shizen-ui/styles';
+  import { cardStyles, type CardVariants } from './card.styles';
+  import type { HTMLAttributes } from 'svelte/elements';
+  
+  interface Props extends HTMLAttributes<HTMLDivElement> {
+    variant?: CardVariants['variant'];
+    padding?: CardVariants['padding'];
+    hoverable?: CardVariants['hoverable'];
+  }
+  
+  let {
+    variant,
+    padding,
+    hoverable,
+    class: className,
+    children,
+    ...rest
+  }: Props = $props();
+</script>
+
+<div
+  class={cn(
+    cardStyles({ variant, padding, hoverable }),
+    className
+  )}
+  {...rest}
+>
+  {@render children?.()}
+</div>
+```
+
+### Step 3: Use the Component
+
+```svelte
+<script>
+  import { Card } from './components';
+</script>
+
+<Card variant="elevated" padding="lg" hoverable>
+  <h2>Card Title</h2>
+  <p>Card content goes here.</p>
+</Card>
+```
+
+## Type-Safe Components
+
+```typescript
+import type { VariantProps } from 'tailwind-variants';
+import { buttonStyles } from '@shizen-ui/styles';
+import type { HTMLButtonAttributes } from 'svelte/elements';
+
+// Extract variant types
+type ButtonVariants = VariantProps<typeof buttonStyles>;
+
+// Use in component props
+interface ButtonProps extends HTMLButtonAttributes {
+  variant?: ButtonVariants['variant'];
+  size?: ButtonVariants['size'];
+  iconOnly?: ButtonVariants['iconOnly'];
+}
+
+// TypeScript ensures only valid variant values
+const props: ButtonProps = {
+  variant: 'primary', // ✅ Valid
+  // variant: 'invalid', // ❌ Type error
+  size: 'md', // ✅ Valid
+  iconOnly: true // ✅ Valid
+};
+```
+
+## Advanced Patterns
+
+### Responsive Variants
+
+```typescript
+const styles = tv({
+  base: 'flex',
+  variants: {
+    direction: {
+      row: 'flex-row',
+      column: 'flex-col'
+    }
+  }
+});
+
+// Use with responsive utilities
+import { cn } from '@shizen-ui/styles';
+
+cn(
+  styles({ direction: 'column' }),
+  'md:flex-row' // Override on medium screens
+);
+```
+
+### Extending Variants
+
+```typescript
+import { buttonStyles } from '@shizen-ui/styles';
+import { tv } from 'tailwind-variants';
+
+// Extend existing variants
+const extendedButtonStyles = tv({
+  extend: buttonStyles,
+  variants: {
+    // Add new variant group
+    rounded: {
+      true: 'rounded-full',
+      false: 'rounded-none'
+    }
+  }
+});
+```
+
+### Conditional Variants
+
+```typescript
+const styles = tv({
+  base: 'button',
+  variants: {
+    disabled: {
+      true: 'opacity-50 cursor-not-allowed pointer-events-none',
+      false: 'hover:brightness-110 active:brightness-90'
+    },
+    loading: {
+      true: 'cursor-wait opacity-75'
+    }
+  },
+  compoundVariants: [
+    {
+      disabled: false,
+      loading: true,
+      class: 'pointer-events-none'
+    }
+  ]
+});
+```
+
+## Available Variant Exports
+
+All component variants from `@shizen-ui/styles`:
+
+```typescript
+import {
+  // Component styles
+  buttonStyles,
+  buttonGroupStyles,
+  inputStyles,
+  inputGroupStyles,
+  textAreaStyles,
+  textFieldStyles,
+  checkboxStyles,
+  checkboxGroupStyles,
+  radioStyles,
+  radioGroupStyles,
+  labelStyles,
+  descriptionStyles,
+  fieldErrorStyles,
+  
+  // Type helpers
+  type ButtonVariants,
+  type InputVariants,
+  // ... other variant types
+} from '@shizen-ui/styles';
+```
+
+## Related
+
+- [cn utility](/api/utilities/cn) - Intelligent class name merging
+- [tailwind-variants documentation](https://www.tailwind-variants.org/) - Official documentation
+- [@shizen-ui/styles](/api/styles) - Complete styles package reference

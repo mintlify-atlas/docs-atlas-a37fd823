@@ -1,0 +1,354 @@
+---
+title: "FieldError"
+description: "Accessible error message component for displaying validation feedback on form fields"
+---
+
+## Overview
+
+The FieldError component displays validation error messages for form fields. It only renders when the field is invalid and automatically integrates with the field context system to provide proper ARIA attributes and accessibility support.
+
+## Import
+
+```svelte
+import { FieldError } from '@shizen-ui/svelte';
+```
+
+## Basic Usage
+
+```svelte
+<Label for="email">Email</Label>
+<Input id="email" type="email" invalid={true} />
+<FieldError invalid={true}>Please enter a valid email address</FieldError>
+```
+
+## With TextField Context
+
+When used within a TextField, FieldError automatically shows/hides based on the field's validation state:
+
+```svelte
+<TextField invalid={errors.email}>
+  <Label>Email Address</Label>
+  <Input type="email" />
+  <Description>We'll send a confirmation to this address</Description>
+  <FieldError>Please enter a valid email address</FieldError>
+</TextField>
+```
+
+<Note>
+  FieldError automatically inherits the `invalid` state from TextField context and only renders when the field is invalid.
+</Note>
+
+## Props
+
+<ParamField path="children" type="Snippet" required>
+  The error message content to display
+</ParamField>
+
+<ParamField path="invalid" type="boolean" default="false">
+  Whether to display the error message. Automatically inherited from TextField context.
+</ParamField>
+
+<ParamField path="truncate" type="boolean" default="false">
+  Whether to truncate long error messages with an ellipsis. Useful for maintaining consistent form layouts.
+</ParamField>
+
+<ParamField path="id" type="string">
+  HTML id attribute for the error element. Automatically generated as `{fieldId}-error` when used within a TextField context.
+</ParamField>
+
+<ParamField path="class" type="string">
+  Additional CSS classes to apply to the error paragraph
+</ParamField>
+
+## Examples
+
+### Basic Validation
+
+```svelte
+<script>
+  let password = '';
+  let hasError = false;
+  
+  function validate() {
+    hasError = password.length < 8;
+  }
+</script>
+
+<TextField invalid={hasError}>
+  <Label>Password</Label>
+  <Input type="password" bind:value={password} on:blur={validate} />
+  <Description>Must be at least 8 characters</Description>
+  <FieldError>Password must be at least 8 characters long</FieldError>
+</TextField>
+```
+
+### Multiple Validation Rules
+
+```svelte
+<script>
+  let username = '';
+  let errorMessage = '';
+  
+  function validate() {
+    if (username.length === 0) {
+      errorMessage = 'Username is required';
+    } else if (username.length < 3) {
+      errorMessage = 'Username must be at least 3 characters';
+    } else if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+      errorMessage = 'Username can only contain letters, numbers, and underscores';
+    } else {
+      errorMessage = '';
+    }
+  }
+</script>
+
+<TextField invalid={!!errorMessage}>
+  <Label>Username</Label>
+  <Input bind:value={username} on:input={validate} />
+  <FieldError>{errorMessage}</FieldError>
+</TextField>
+```
+
+### Truncated Error Messages
+
+```svelte
+<TextField invalid={true}>
+  <Label>API Endpoint</Label>
+  <Input />
+  <FieldError truncate={true}>
+    The endpoint URL you provided is not valid. Please ensure it starts with https:// 
+    and includes a valid domain name.
+  </FieldError>
+</TextField>
+```
+
+### With Checkbox Validation
+
+```svelte
+<script>
+  let accepted = false;
+  let showError = false;
+  
+  function handleSubmit() {
+    showError = !accepted;
+  }
+</script>
+
+<Checkbox bind:checked={accepted} invalid={showError}>
+  <CheckboxIndicator />
+  <Label>I agree to the terms and conditions</Label>
+  <Description>Please read our terms before continuing</Description>
+  <FieldError>You must accept the terms to continue</FieldError>
+</Checkbox>
+```
+
+### Server-Side Errors
+
+```svelte
+<script>
+  let email = '';
+  let serverError = '';
+  
+  async function handleSubmit() {
+    try {
+      await api.validateEmail(email);
+      serverError = '';
+    } catch (error) {
+      serverError = error.message;
+    }
+  }
+</script>
+
+<TextField invalid={!!serverError}>
+  <Label>Email Address</Label>
+  <Input type="email" bind:value={email} />
+  <FieldError>{serverError}</FieldError>
+</TextField>
+```
+
+## Styling and Customization
+
+The FieldError component uses the `fieldErrorStyles` variant from `@shizen-ui/styles`:
+
+```svelte
+<FieldError class="text-red-600 font-medium">
+  Custom styled error message
+</FieldError>
+```
+
+### Data Attributes
+
+The component exposes these data attributes for CSS targeting:
+
+- `data-slot="error-message"`: Identifies this as an error message element
+- `role="alert"`: Indicates this is an alert for assistive technologies
+
+```css
+[data-slot="error-message"] {
+  animation: shake 0.3s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+```
+
+### Truncate Variant
+
+When `truncate={true}`, the error message will be cut off with an ellipsis:
+
+```css
+[data-slot="error-message"].truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+```
+
+## Accessibility
+
+<Tip>
+  FieldError follows WAI-ARIA best practices for form error messages.
+</Tip>
+
+### ARIA Integration
+
+When a FieldError is used with an Input in a TextField context:
+
+```html
+<!-- Input automatically gets aria-errormessage when invalid -->
+<input 
+  id="field-abc123" 
+  aria-invalid="true"
+  aria-errormessage="field-abc123-error"
+/>
+<p 
+  id="field-abc123-error" 
+  role="alert" 
+  data-slot="error-message"
+>
+  Your error message
+</p>
+```
+
+This ensures:
+- Screen readers announce errors when they appear
+- The error is explicitly associated with the form control
+- The `role="alert"` triggers immediate announcement
+
+### Best Practices
+
+<Tip>
+  Write clear, actionable error messages that tell users how to fix the problem.
+</Tip>
+
+**Good error messages:**
+- "Email must include an @ symbol"
+- "Password must be at least 8 characters"
+- "Username is already taken. Please try another."
+
+**Avoid:**
+- "Invalid input" (not specific enough)
+- "Error: field_email_validation_failed" (too technical)
+- "You can't do that" (not helpful)
+
+### Live Regions
+
+The `role="alert"` attribute makes FieldError a live region:
+
+- When the error appears, screen readers announce it immediately
+- No need to move focus to the error message
+- Users stay focused on the input field while hearing the error
+
+## Conditional Rendering
+
+FieldError only renders when invalid:
+
+```svelte
+{#if finalInvalid}
+  <p
+    id={finalId}
+    class={cn(fieldErrorStyles({ truncate }), className)}
+    data-slot="error-message"
+    role="alert"
+    {...rest}
+  >
+    {@render children()}
+  </p>
+{/if}
+```
+
+This means:
+- No DOM element when field is valid (clean markup)
+- Automatically appears/disappears based on validation state
+- No need to manually show/hide with conditional logic
+
+## Field Context Integration
+
+The FieldError component uses `useFieldStateContext` to integrate with parent field components:
+
+```typescript
+const fieldContext = useFieldStateContext();
+
+const finalInvalid = fieldContext.exists ? fieldContext.invalid : invalid;
+const finalId = propId ?? 
+  (fieldContext.exists && fieldContext.id ? `${fieldContext.id}-error` : undefined);
+```
+
+This means:
+- Automatic ID generation for ARIA association
+- State inheritance from TextField or other containers
+- Consistent behavior across all form components
+
+## Form Validation Patterns
+
+### Client-Side Validation
+
+```svelte
+<script>
+  let formData = { email: '', password: '' };
+  let errors = { email: '', password: '' };
+  
+  function validateForm() {
+    errors.email = !formData.email.includes('@') 
+      ? 'Please enter a valid email' : '';
+    errors.password = formData.password.length < 8 
+      ? 'Password must be at least 8 characters' : '';
+    
+    return !errors.email && !errors.password;
+  }
+  
+  function handleSubmit() {
+    if (validateForm()) {
+      // Submit form
+    }
+  }
+</script>
+
+<form on:submit|preventDefault={handleSubmit}>
+  <TextField invalid={!!errors.email}>
+    <Label>Email</Label>
+    <Input type="email" bind:value={formData.email} />
+    <FieldError>{errors.email}</FieldError>
+  </TextField>
+  
+  <TextField invalid={!!errors.password}>
+    <Label>Password</Label>
+    <Input type="password" bind:value={formData.password} />
+    <FieldError>{errors.password}</FieldError>
+  </TextField>
+  
+  <Button type="submit">Sign In</Button>
+</form>
+```
+
+## Related Components
+
+- [Label](/components/label) - Form field label with required indicator
+- [Description](/components/description) - Helper text for form fields
+- [TextField](/components/text-field) - Complete form field container
+- [Input](/components/input) - Text input component
+- [Checkbox](/components/checkbox) - Checkbox with validation support
+- [Radio](/components/radio) - Radio button with validation support

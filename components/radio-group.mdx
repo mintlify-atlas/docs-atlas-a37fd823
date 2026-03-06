@@ -1,0 +1,702 @@
+---
+title: Radio Group
+description: A container for managing radio buttons as a coordinated group with single-selection behavior and shared validation.
+---
+
+## Overview
+
+The RadioGroup component provides a container for managing radio buttons with coordinated single-selection behavior. It ensures only one radio can be selected at a time, propagates disabled and invalid states to child radios, and supports both horizontal and vertical layouts with arrow key navigation.
+
+## Installation
+
+```bash
+npm install @shizen-ui/svelte
+```
+
+## Import
+
+```typescript
+import { RadioGroup, Radio } from '@shizen-ui/svelte';
+```
+
+## Basic Usage
+
+<CodeGroup>
+```svelte Simple Group
+<script>
+  import { RadioGroup, Radio } from '@shizen-ui/svelte';
+  
+  let selected = $state('option1');
+</script>
+
+<RadioGroup bind:value={selected}>
+  <Radio value="option1">
+    <Radio.Control />
+    <Radio.Content>Option 1</Radio.Content>
+  </Radio>
+  
+  <Radio value="option2">
+    <Radio.Control />
+    <Radio.Content>Option 2</Radio.Content>
+  </Radio>
+  
+  <Radio value="option3">
+    <Radio.Control />
+    <Radio.Content>Option 3</Radio.Content>
+  </Radio>
+</RadioGroup>
+
+<p>Selected: {selected}</p>
+```
+
+```svelte With Label
+<script>
+  import { RadioGroup, Radio, TextField, Label } from '@shizen-ui/svelte';
+  
+  let size = $state('medium');
+</script>
+
+<TextField>
+  <Label>Select size</Label>
+  <RadioGroup bind:value={size}>
+    <Radio value="small">
+      <Radio.Control />
+      <Radio.Content>Small</Radio.Content>
+    </Radio>
+    
+    <Radio value="medium">
+      <Radio.Control />
+      <Radio.Content>Medium</Radio.Content>
+    </Radio>
+    
+    <Radio value="large">
+      <Radio.Control />
+      <Radio.Content>Large</Radio.Content>
+    </Radio>
+  </RadioGroup>
+</TextField>
+```
+</CodeGroup>
+
+## Props
+
+<ParamField path="value" type="string">
+  The value of the currently selected radio button. Use `bind:value` for two-way binding.
+</ParamField>
+
+<ParamField path="name" type="string">
+  The name attribute shared by all radio buttons in the group. Auto-generated if not provided.
+</ParamField>
+
+<ParamField path="orientation" type="string" default="vertical">
+  The layout direction of the radio group.
+  
+  Options: `"vertical"` | `"horizontal"`
+</ParamField>
+
+<ParamField path="disabled" type="boolean" default={false}>
+  When true, disables all radio buttons in the group.
+</ParamField>
+
+<ParamField path="invalid" type="boolean" default={false}>
+  When true, marks all radio buttons in the group as invalid for error styling.
+</ParamField>
+
+<ParamField path="required" type="boolean" default={false}>
+  When true, indicates the group requires a selection.
+</ParamField>
+
+<ParamField path="id" type="string">
+  The ID for the radio group container. Auto-generated if not provided.
+</ParamField>
+
+<ParamField path="class" type="string">
+  Additional CSS classes to apply to the group container.
+</ParamField>
+
+## Orientation
+
+### Vertical (Default)
+
+```svelte
+<script>
+  import { RadioGroup, Radio } from '@shizen-ui/svelte';
+  
+  let selected = $state('option1');
+</script>
+
+<RadioGroup bind:value={selected} orientation="vertical">
+  <Radio value="option1">
+    <Radio.Control />
+    <Radio.Content>Option 1</Radio.Content>
+  </Radio>
+  
+  <Radio value="option2">
+    <Radio.Control />
+    <Radio.Content>Option 2</Radio.Content>
+  </Radio>
+  
+  <Radio value="option3">
+    <Radio.Control />
+    <Radio.Content>Option 3</Radio.Content>
+  </Radio>
+</RadioGroup>
+```
+
+### Horizontal
+
+```svelte
+<script>
+  import { RadioGroup, Radio } from '@shizen-ui/svelte';
+  
+  let size = $state('m');
+</script>
+
+<RadioGroup bind:value={size} orientation="horizontal">
+  <Radio value="xs">
+    <Radio.Control />
+    <Radio.Content>XS</Radio.Content>
+  </Radio>
+  
+  <Radio value="s">
+    <Radio.Control />
+    <Radio.Content>S</Radio.Content>
+  </Radio>
+  
+  <Radio value="m">
+    <Radio.Control />
+    <Radio.Content>M</Radio.Content>
+  </Radio>
+  
+  <Radio value="l">
+    <Radio.Control />
+    <Radio.Content>L</Radio.Content>
+  </Radio>
+  
+  <Radio value="xl">
+    <Radio.Control />
+    <Radio.Content>XL</Radio.Content>
+  </Radio>
+</RadioGroup>
+```
+
+## State Management
+
+### Controlled State
+
+```svelte
+<script>
+  import { RadioGroup, Radio } from '@shizen-ui/svelte';
+  
+  let theme = $state('light');
+  
+  function resetTheme() {
+    theme = 'system';
+  }
+</script>
+
+<div>
+  <button onclick={resetTheme}>Reset to System</button>
+</div>
+
+<RadioGroup bind:value={theme}>
+  <Radio value="light">
+    <Radio.Control />
+    <Radio.Content>
+      <div class="flex items-center gap-2">
+        <i class="i-lucide-sun"></i>
+        <span>Light</span>
+      </div>
+    </Radio.Content>
+  </Radio>
+  
+  <Radio value="dark">
+    <Radio.Control />
+    <Radio.Content>
+      <div class="flex items-center gap-2">
+        <i class="i-lucide-moon"></i>
+        <span>Dark</span>
+      </div>
+    </Radio.Content>
+  </Radio>
+  
+  <Radio value="system">
+    <Radio.Control />
+    <Radio.Content>
+      <div class="flex items-center gap-2">
+        <i class="i-lucide-monitor"></i>
+        <span>System</span>
+      </div>
+    </Radio.Content>
+  </Radio>
+</RadioGroup>
+
+<p>Current theme: {theme}</p>
+```
+
+### Default Value
+
+```svelte
+<script>
+  import { RadioGroup, Radio } from '@shizen-ui/svelte';
+  
+  let priority = $state('medium');
+</script>
+
+<RadioGroup bind:value={priority}>
+  <Radio value="low">
+    <Radio.Control />
+    <Radio.Content>Low Priority</Radio.Content>
+  </Radio>
+  
+  <Radio value="medium">
+    <Radio.Control />
+    <Radio.Content>Medium Priority</Radio.Content>
+  </Radio>
+  
+  <Radio value="high">
+    <Radio.Control />
+    <Radio.Content>High Priority</Radio.Content>
+  </Radio>
+</RadioGroup>
+```
+
+## Validation
+
+### Required Group
+
+```svelte
+<script>
+  import { RadioGroup, Radio, TextField, Label, FieldError } from '@shizen-ui/svelte';
+  
+  let plan = $state<string>();
+  let showError = $state(false);
+  
+  function validate() {
+    showError = !plan;
+  }
+</script>
+
+<TextField invalid={showError}>
+  <Label>Select a plan (required)</Label>
+  <RadioGroup bind:value={plan} required invalid={showError}>
+    <Radio value="free">
+      <Radio.Control />
+      <Radio.Content>Free</Radio.Content>
+    </Radio>
+    
+    <Radio value="basic">
+      <Radio.Control />
+      <Radio.Content>Basic - $10/mo</Radio.Content>
+    </Radio>
+    
+    <Radio value="pro">
+      <Radio.Control />
+      <Radio.Content>Pro - $25/mo</Radio.Content>
+    </Radio>
+  </RadioGroup>
+  {#if showError}
+    <FieldError>Please select a plan</FieldError>
+  {/if}
+</TextField>
+
+<button onclick={validate}>Validate</button>
+```
+
+### Form Validation
+
+```svelte
+<script>
+  import { RadioGroup, Radio, TextField, Label, FieldError } from '@shizen-ui/svelte';
+  
+  let shippingMethod = $state<string>();
+  let submitted = $state(false);
+  
+  const isValid = $derived(!!shippingMethod);
+  const showError = $derived(submitted && !isValid);
+  
+  function handleSubmit(e: SubmitEvent) {
+    e.preventDefault();
+    submitted = true;
+    
+    if (isValid) {
+      console.log('Shipping method:', shippingMethod);
+    }
+  }
+</script>
+
+<form onsubmit={handleSubmit}>
+  <TextField invalid={showError}>
+    <Label>Shipping method</Label>
+    <RadioGroup bind:value={shippingMethod} invalid={showError}>
+      <Radio value="standard">
+        <Radio.Control />
+        <Radio.Content>
+          <div>
+            <div class="font-medium">Standard</div>
+            <div class="text-sm text-gray-500">5-7 business days - Free</div>
+          </div>
+        </Radio.Content>
+      </Radio>
+      
+      <Radio value="express">
+        <Radio.Control />
+        <Radio.Content>
+          <div>
+            <div class="font-medium">Express</div>
+            <div class="text-sm text-gray-500">2-3 business days - $10</div>
+          </div>
+        </Radio.Content>
+      </Radio>
+      
+      <Radio value="overnight">
+        <Radio.Control />
+        <Radio.Content>
+          <div>
+            <div class="font-medium">Overnight</div>
+            <div class="text-sm text-gray-500">Next day - $25</div>
+          </div>
+        </Radio.Content>
+      </Radio>
+    </RadioGroup>
+    {#if showError}
+      <FieldError>Please select a shipping method</FieldError>
+    {/if}
+  </TextField>
+  
+  <button type="submit">Continue to Payment</button>
+</form>
+```
+
+## Advanced Examples
+
+### Disabled Group
+
+```svelte
+<RadioGroup value="option2" disabled>
+  <Radio value="option1">
+    <Radio.Control />
+    <Radio.Content>Option 1</Radio.Content>
+  </Radio>
+  
+  <Radio value="option2">
+    <Radio.Control />
+    <Radio.Content>Option 2 (selected)</Radio.Content>
+  </Radio>
+  
+  <Radio value="option3">
+    <Radio.Control />
+    <Radio.Content>Option 3</Radio.Content>
+  </Radio>
+</RadioGroup>
+```
+
+### Card-Style Options
+
+```svelte
+<script>
+  import { RadioGroup, Radio } from '@shizen-ui/svelte';
+  
+  let plan = $state('basic');
+</script>
+
+<RadioGroup bind:value={plan} class="grid grid-cols-3 gap-4">
+  <Radio 
+    value="basic"
+    class="border-2 rounded-lg p-6 cursor-pointer transition-all {plan === 'basic' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'}"
+  >
+    <div class="flex flex-col items-center text-center gap-3">
+      <Radio.Control />
+      <Radio.Content>
+        <div>
+          <div class="text-xl font-bold">Basic</div>
+          <div class="text-3xl font-bold mt-2">$10</div>
+          <div class="text-sm text-gray-500">per month</div>
+          <ul class="mt-4 space-y-2 text-sm">
+            <li>10 Projects</li>
+            <li>5GB Storage</li>
+            <li>Email Support</li>
+          </ul>
+        </div>
+      </Radio.Content>
+    </div>
+  </Radio>
+  
+  <Radio 
+    value="pro"
+    class="border-2 rounded-lg p-6 cursor-pointer transition-all {plan === 'pro' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'}"
+  >
+    <div class="flex flex-col items-center text-center gap-3">
+      <Radio.Control />
+      <Radio.Content>
+        <div>
+          <div class="text-xl font-bold">Pro</div>
+          <div class="text-3xl font-bold mt-2">$25</div>
+          <div class="text-sm text-gray-500">per month</div>
+          <ul class="mt-4 space-y-2 text-sm">
+            <li>Unlimited Projects</li>
+            <li>50GB Storage</li>
+            <li>Priority Support</li>
+          </ul>
+        </div>
+      </Radio.Content>
+    </div>
+  </Radio>
+  
+  <Radio 
+    value="enterprise"
+    class="border-2 rounded-lg p-6 cursor-pointer transition-all {plan === 'enterprise' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'}"
+  >
+    <div class="flex flex-col items-center text-center gap-3">
+      <Radio.Control />
+      <Radio.Content>
+        <div>
+          <div class="text-xl font-bold">Enterprise</div>
+          <div class="text-3xl font-bold mt-2">$99</div>
+          <div class="text-sm text-gray-500">per month</div>
+          <ul class="mt-4 space-y-2 text-sm">
+            <li>Everything in Pro</li>
+            <li>Unlimited Storage</li>
+            <li>24/7 Phone Support</li>
+          </ul>
+        </div>
+      </Radio.Content>
+    </div>
+  </Radio>
+</RadioGroup>
+```
+
+### With Description
+
+```svelte
+<script>
+  import { RadioGroup, Radio, TextField, Label, Description } from '@shizen-ui/svelte';
+  
+  let visibility = $state('private');
+</script>
+
+<TextField>
+  <Label>Project Visibility</Label>
+  <Description>Choose who can see this project</Description>
+  <RadioGroup bind:value={visibility}>
+    <Radio value="private">
+      <Radio.Control />
+      <Radio.Content>
+        <div>
+          <div class="font-medium">Private</div>
+          <div class="text-sm text-gray-500">Only you can access this project</div>
+        </div>
+      </Radio.Content>
+    </Radio>
+    
+    <Radio value="team">
+      <Radio.Control />
+      <Radio.Content>
+        <div>
+          <div class="font-medium">Team</div>
+          <div class="text-sm text-gray-500">All team members can access</div>
+        </div>
+      </Radio.Content>
+    </Radio>
+    
+    <Radio value="public">
+      <Radio.Control />
+      <Radio.Content>
+        <div>
+          <div class="font-medium">Public</div>
+          <div class="text-sm text-gray-500">Anyone on the internet can view</div>
+        </div>
+      </Radio.Content>
+    </Radio>
+  </RadioGroup>
+</TextField>
+```
+
+### Dynamic Options
+
+```svelte
+<script>
+  import { RadioGroup, Radio } from '@shizen-ui/svelte';
+  
+  let selected = $state<string>();
+  
+  const plans = [
+    { id: 'free', name: 'Free', price: 0, features: ['Basic features', '1 user'] },
+    { id: 'starter', name: 'Starter', price: 10, features: ['All basic features', '5 users', 'Email support'] },
+    { id: 'business', name: 'Business', price: 50, features: ['All starter features', '20 users', 'Priority support'] },
+  ];
+</script>
+
+<RadioGroup bind:value={selected}>
+  {#each plans as plan (plan.id)}
+    <Radio value={plan.id}>
+      <Radio.Control />
+      <Radio.Content>
+        <div>
+          <div class="font-semibold">{plan.name}</div>
+          <div class="text-sm text-gray-600">${plan.price}/month</div>
+          <ul class="text-xs text-gray-500 mt-1">
+            {#each plan.features as feature}
+              <li>• {feature}</li>
+            {/each}
+          </ul>
+        </div>
+      </Radio.Content>
+    </Radio>
+  {/each}
+</RadioGroup>
+```
+
+### Nested Radio Groups
+
+```svelte
+<script>
+  import { RadioGroup, Radio, TextField, Label } from '@shizen-ui/svelte';
+  
+  let paymentMethod = $state('card');
+  let cardType = $state('visa');
+  let bankType = $state('checking');
+</script>
+
+<TextField>
+  <Label>Payment Method</Label>
+  <RadioGroup bind:value={paymentMethod}>
+    <Radio value="card">
+      <Radio.Control />
+      <Radio.Content>Credit Card</Radio.Content>
+    </Radio>
+    
+    {#if paymentMethod === 'card'}
+      <div class="ml-8 mt-2">
+        <RadioGroup bind:value={cardType} orientation="horizontal">
+          <Radio value="visa">
+            <Radio.Control />
+            <Radio.Content>Visa</Radio.Content>
+          </Radio>
+          <Radio value="mastercard">
+            <Radio.Control />
+            <Radio.Content>Mastercard</Radio.Content>
+          </Radio>
+          <Radio value="amex">
+            <Radio.Control />
+            <Radio.Content>Amex</Radio.Content>
+          </Radio>
+        </RadioGroup>
+      </div>
+    {/if}
+    
+    <Radio value="bank">
+      <Radio.Control />
+      <Radio.Content>Bank Transfer</Radio.Content>
+    </Radio>
+    
+    {#if paymentMethod === 'bank'}
+      <div class="ml-8 mt-2">
+        <RadioGroup bind:value={bankType}>
+          <Radio value="checking">
+            <Radio.Control />
+            <Radio.Content>Checking Account</Radio.Content>
+          </Radio>
+          <Radio value="savings">
+            <Radio.Control />
+            <Radio.Content>Savings Account</Radio.Content>
+          </Radio>
+        </RadioGroup>
+      </div>
+    {/if}
+    
+    <Radio value="paypal">
+      <Radio.Control />
+      <Radio.Content>PayPal</Radio.Content>
+    </Radio>
+  </RadioGroup>
+</TextField>
+```
+
+## Context Propagation
+
+The RadioGroup automatically provides context to child Radio components:
+
+- `value` - The currently selected value
+- `name` - Shared name for all radio buttons
+- `disabled` - Disabled state inherited by all children
+- `invalid` - Invalid state inherited by all children
+- `orientation` - Layout direction
+- `setValue(value: string)` - Function to select a radio
+
+Child radios automatically coordinate with the group and only need their `value` prop set.
+
+<Note>
+  When a Radio is inside a RadioGroup, its `value` prop is required to identify which option it represents. The `checked` prop is automatically managed by the group.
+</Note>
+
+## Accessibility
+
+- Uses `role="radiogroup"` for semantic grouping
+- Proper keyboard navigation:
+  - **Tab** focuses the checked radio (or first if none checked)
+  - **Arrow Up/Down** (vertical) or **Arrow Left/Right** (horizontal) to navigate between options
+  - **Space** or **Enter** to select focused radio
+- Only the checked radio (or first radio if none checked) has `tabindex="0"`, others have `tabindex="-1"`
+- Group state propagated via data attributes:
+  - `data-disabled` - When the group is disabled
+  - `data-invalid` - When the group is invalid
+  - `data-orientation` - The layout orientation
+- All radios share the same `name` attribute for proper form behavior
+- Combine with Label component for proper labeling:
+
+```svelte
+<TextField>
+  <Label for="size-group">Choose your size</Label>
+  <RadioGroup id="size-group" bind:value={selected}>
+    <!-- radios -->
+  </RadioGroup>
+</TextField>
+```
+
+- Use Description for additional context
+- Use FieldError to display validation messages
+
+<Tip>
+  Use RadioGroup with TextField, Label, and FieldError components for complete form field functionality with proper accessibility and validation.
+</Tip>
+
+## Form Integration
+
+All radios in the group share the same `name` attribute, allowing a single value to be submitted with the form:
+
+```svelte
+<script>
+  import { RadioGroup, Radio } from '@shizen-ui/svelte';
+  
+  let selected = $state('option1');
+  
+  function handleSubmit(e: SubmitEvent) {
+    e.preventDefault();
+    const formData = new FormData(e.target as HTMLFormElement);
+    const value = formData.get('choice');
+    console.log('Selected:', value);
+  }
+</script>
+
+<form onsubmit={handleSubmit}>
+  <RadioGroup bind:value={selected} name="choice">
+    <Radio value="option1">
+      <Radio.Control />
+      <Radio.Content>Option 1</Radio.Content>
+    </Radio>
+    
+    <Radio value="option2">
+      <Radio.Control />
+      <Radio.Content>Option 2</Radio.Content>
+    </Radio>
+    
+    <Radio value="option3">
+      <Radio.Control />
+      <Radio.Content>Option 3</Radio.Content>
+    </Radio>
+  </RadioGroup>
+  
+  <button type="submit">Submit</button>
+</form>
+```

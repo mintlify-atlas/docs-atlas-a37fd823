@@ -1,0 +1,311 @@
+---
+title: Styling
+description: Learn how Shizen UI integrates with Tailwind CSS v4 and provides utilities for styling components
+---
+
+## Overview
+
+Shizen UI is built on top of **Tailwind CSS v4**, leveraging its powerful utility-first approach and modern CSS features. The styling system is designed to be flexible, composable, and easy to customize.
+
+## CSS Architecture
+
+### Layer System
+
+Shizen UI uses CSS layers to organize styles in a predictable cascade:
+
+```css
+@import "tailwindcss";
+
+@import "./theme/index.css";
+@import "./components/index.css";
+```
+
+The layer hierarchy ensures proper style precedence:
+
+1. **Base layer** - Theme variables and CSS custom properties
+2. **Components layer** - Component-specific styles
+3. **Utilities layer** - Tailwind utility classes
+
+### Component Styles
+
+Components use a combination of CSS classes and CSS custom properties for maximum flexibility:
+
+```css
+@layer components {
+  .button {
+    @apply relative overflow-hidden inline-flex items-center justify-center;
+    @apply rounded-control font-medium transition-colors duration-200;
+    
+    /* Custom properties for dynamic theming */
+    --btn-bg: transparent;
+    --btn-bg-hover: var(--btn-bg);
+    --btn-fg: currentColor;
+    
+    background-color: var(--btn-bg);
+    color: var(--btn-fg);
+  }
+}
+```
+
+## The `cn` Utility
+
+Shizen UI provides a `cn` utility function for merging class names intelligently. It combines `clsx` for conditional classes and `tailwind-merge` for proper Tailwind class merging.
+
+### Installation
+
+```tsx
+import { cn } from "@shizen-ui/styles";
+```
+
+### Implementation
+
+```typescript
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+```
+
+### Usage Examples
+
+<CodeGroup>
+
+```tsx Basic Usage
+import { cn } from "@shizen-ui/styles";
+
+function MyComponent({ className, isActive }) {
+  return (
+    <div
+      className={cn(
+        "base-class",
+        isActive && "active-class",
+        className
+      )}
+    >
+      Content
+    </div>
+  );
+}
+```
+
+```tsx Merging Conflicting Classes
+import { cn } from "@shizen-ui/styles";
+
+// tailwind-merge ensures only the last value of each property applies
+const className = cn("px-2 py-1", "px-4"); // Result: "py-1 px-4"
+```
+
+```tsx Conditional Styling
+import { cn } from "@shizen-ui/styles";
+
+function Alert({ variant, className }) {
+  return (
+    <div
+      className={cn(
+        "rounded-lg p-4",
+        {
+          "bg-blue-100 text-blue-900": variant === "info",
+          "bg-red-100 text-red-900": variant === "error",
+          "bg-green-100 text-green-900": variant === "success",
+        },
+        className
+      )}
+    />
+  );
+}
+```
+
+</CodeGroup>
+
+## Customizing Component Styles
+
+### Using className
+
+All Shizen UI components accept a `className` prop for custom styling:
+
+```tsx
+import { Button } from "@shizen-ui/react";
+import { cn } from "@shizen-ui/styles";
+
+function CustomButton() {
+  return (
+    <Button className="shadow-lg hover:shadow-xl transition-shadow">
+      Custom Styled Button
+    </Button>
+  );
+}
+```
+
+### Overriding CSS Custom Properties
+
+Components use CSS custom properties that can be overridden:
+
+```tsx
+import { Button } from "@shizen-ui/react";
+
+function CustomButton() {
+  return (
+    <Button
+      style={{
+        "--btn-bg": "#8b5cf6",
+        "--btn-bg-hover": "#7c3aed",
+        "--btn-fg": "#ffffff",
+      } as React.CSSProperties}
+    >
+      Purple Button
+    </Button>
+  );
+}
+```
+
+### Importing Component CSS
+
+You can import specific component styles:
+
+```css
+/* Import specific component styles */
+@import "@shizen-ui/styles/components/button.css";
+@import "@shizen-ui/styles/components/input.css";
+
+/* Or import all component styles */
+@import "@shizen-ui/styles/styles";
+```
+
+## Tailwind CSS Integration
+
+### Using Tailwind Utilities
+
+Shizen UI components work seamlessly with Tailwind utilities:
+
+```tsx
+import { Input } from "@shizen-ui/react";
+
+function SearchInput() {
+  return (
+    <Input
+      className="w-full max-w-md mx-auto"
+      placeholder="Search..."
+    />
+  );
+}
+```
+
+### Custom Utilities
+
+Shizen UI defines custom utilities for common patterns:
+
+```css
+@utility focus-field-ring {
+  @apply ring-2 ring-focus ring-offset-0 outline-none;
+}
+
+@utility invalid-field-ring {
+  @apply ring-2 ring-danger ring-offset-0 outline-none;
+}
+
+@utility status-disabled {
+  opacity: var(--disabled-opacity);
+  cursor: var(--cursor-disabled);
+}
+```
+
+These utilities are used throughout components:
+
+```css
+.input:focus {
+  @apply status-focused-field;
+}
+
+.input[data-invalid="true"] {
+  @apply status-invalid-field;
+}
+```
+
+## Design Tokens
+
+Shizen UI uses semantic design tokens for consistent spacing and sizing:
+
+```css
+@theme inline {
+  /* Spacing tokens */
+  --spacing-control-sm: calc(var(--spacing) * 8); /* 2rem (32px) */
+  --spacing-control-md: calc(var(--spacing) * 9); /* 2.25rem (36px) */
+  --spacing-control-lg: calc(var(--spacing) * 10); /* 2.5rem (40px) */
+  
+  /* Radius tokens */
+  --radius-control: calc(var(--radius) * 3); /* 0.75rem (12px) */
+  --radius-field: calc(var(--radius) * 3); /* 0.75rem (12px) */
+}
+```
+
+These tokens are available as Tailwind utilities:
+
+```tsx
+<div className="h-control-md rounded-control" />
+```
+
+## Best Practices
+
+<AccordionGroup>
+
+<Accordion title="Use the cn utility for conditional classes">
+  Always use the `cn` utility when combining class names to ensure proper Tailwind class merging:
+  
+  ```tsx
+  // Good
+  className={cn("base", condition && "conditional", props.className)}
+  
+  // Bad
+  className={`base ${condition ? "conditional" : ""} ${props.className}`}
+  ```
+</Accordion>
+
+<Accordion title="Leverage CSS custom properties for dynamic theming">
+  When creating custom components, use CSS custom properties for values that might change:
+  
+  ```css
+  .my-component {
+    --component-bg: var(--color-surface);
+    background-color: var(--component-bg);
+  }
+  ```
+</Accordion>
+
+<Accordion title="Prefer Tailwind utilities over custom CSS">
+  Use Tailwind utilities when possible for better consistency and smaller bundle sizes:
+  
+  ```tsx
+  // Good
+  <div className="flex items-center gap-2" />
+  
+  // Less ideal
+  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }} />
+  ```
+</Accordion>
+
+<Accordion title="Use semantic design tokens">
+  Prefer semantic tokens over hard-coded values:
+  
+  ```tsx
+  // Good
+  <Button className="h-control-md rounded-control" />
+  
+  // Less ideal
+  <Button className="h-9 rounded-xl" />
+  ```
+</Accordion>
+
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Theming" icon="palette" href="/concepts/theming">
+    Learn about the theme system and color customization
+  </Card>
+  <Card title="Variants" icon="code-branch" href="/concepts/variants">
+    Explore the variant system for component styles
+  </Card>
+</CardGroup>
